@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unbreakable Spirit — Mental Health Reformation Consortium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0805;
+    --dark: #111009;
+    --amber: #c8762a;
+    --amber-light: #e08d35;
+    --amber-dim: #8a5219;
+    --white: #f5f0e8;
+    --white-dim: #b8b0a0;
+    --rule: rgba(200, 118, 42, 0.3);
+    --rule-light: rgba(245, 240, 232, 0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── GLOBAL SECTION STRUCTURE ── */
+  section {
+    position: relative;
+    padding: 100px 0;
+    border-bottom: 1px solid var(--rule-light);
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .container--wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ── LABEL / EYEBROW ── */
+  .eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-bottom: 24px;
+  }
+
+  .eyebrow--amber { color: var(--amber); }
+
+  /* ── TYPOGRAPHIC SCALE ── */
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .display-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 12vw, 160px);
+    letter-spacing: 0.04em;
+    line-height: 0.9;
+    color: var(--white);
+  }
+
+  .display-title span { color: var(--amber); }
+
+  .section-title {
+    font-size: clamp(36px, 5vw, 58px);
+    color: var(--white);
+    margin-bottom: 32px;
+  }
+
+  .section-title span { color: var(--amber); }
+
+  p {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--white-dim);
+    margin-bottom: 20px;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--white); font-weight: 500; }
+
+  /* ── HORIZONTAL RULES ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule-light);
+    margin: 48px 0;
+  }
+
+  hr.amber { border-top-color: var(--rule); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 60px 0 80px;
+    border-bottom: 1px solid var(--rule-light);
+    background: radial-gradient(ellipse 80% 60% at 60% 20%, rgba(200,118,42,0.06) 0%, transparent 70%);
+  }
+
+  .hero-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 40px;
+  }
+
+  .hero-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(13px, 2vw, 16px);
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    margin-top: 24px;
+    margin-bottom: 0;
+  }
+
+
+  /* ── STATEMENT SECTION ── */
+  #statement {
+    background: linear-gradient(180deg, var(--dark) 0%, var(--black) 100%);
+  }
+
+  .intro-large {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 3.5vw, 36px);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--white);
+    margin-bottom: 48px;
+    font-style: italic;
+  }
+
+  .pull-quote {
+    border-left: 3px solid var(--amber);
+    padding: 4px 0 4px 28px;
+    margin: 48px 0;
+  }
+
+  .pull-quote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-style: italic;
+    color: var(--white);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* ── SUBHEAD LABELS ── */
+  .section-label {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--amber);
+    padding: 4px 12px;
+    margin-bottom: 32px;
+  }
+
+  .inline-heading {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin: 40px 0 16px;
+  }
+
+  /* ── CONSORTIUM SECTION ── */
+  #consortium {
+    background: var(--dark);
+  }
+
+  /* ── TABLE ── */
+  .layer-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 40px 0;
+    font-size: 14px;
+  }
+
+  .layer-table thead tr {
+    border-bottom: 1px solid var(--amber);
+  }
+
+  .layer-table th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .layer-table td {
+    padding: 18px 16px;
+    color: var(--white-dim);
+    border-bottom: 1px solid var(--rule-light);
+    vertical-align: top;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+
+  .layer-table td:first-child {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    color: var(--white);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .layer-table td:last-child {
+    color: var(--amber);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  .layer-table tr:hover td {
+    background: rgba(200, 118, 42, 0.04);
+  }
+
+  /* ── FINANCIALS ── */
+  .financial-block {
+    background: rgba(200, 118, 42, 0.06);
+    border: 1px solid var(--rule);
+    padding: 40px;
+    margin: 40px 0;
+  }
+
+  .financial-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-light);
+    gap: 20px;
+  }
+
+  .financial-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .financial-row:first-child { padding-top: 0; }
+
+  .financial-label {
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--white-dim);
+    flex: 1;
+  }
+
+  .financial-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--white);
+  }
+
+  .financial-value.savings { color: var(--amber); }
+
+  .financial-note {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule-light);
+    font-size: 13px;
+    color: var(--white-dim);
+    font-style: italic;
+  }
+
+  /* ── PARABLE SECTION ── */
+  #parable {
+    background: var(--black);
+    position: relative;
+  }
+
+  .stone-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 8vw, 100px);
+    font-weight: 300;
+    line-height: 1.0;
+    margin-bottom: 40px;
+  }
+
+  .stone-title span { color: var(--amber); }
+
+  .parable-text p {
+    font-size: clamp(15px, 1.8vw, 17px);
+    line-height: 1.85;
+    color: var(--white-dim);
+  }
+
+  .highlighted-block {
+    border-left: 3px solid var(--amber);
+    padding: 2px 0 2px 24px;
+    margin: 36px 0;
+  }
+
+  .highlighted-block p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(15px, 2vw, 18px);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  .call-lines {
+    margin: 40px 0;
+    padding: 0;
+  }
+
+  .call-lines p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(18px, 2.5vw, 22px);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .call-lines p:nth-child(1) { color: var(--amber); }
+  .call-lines p:nth-child(2) { color: var(--white); }
+  .call-lines p:nth-child(3) { color: var(--amber); }
+
+  /* ── BLOCKQUOTE ── */
+  .blake-quote {
+    position: relative;
+    margin: 60px 0 0;
+    padding: 32px 32px 32px 48px;
+    border-left: none;
+  }
+
+  .blake-quote::before {
+    content: '\201C';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px;
+    line-height: 1;
+    color: var(--amber-dim);
+    opacity: 0.6;
+  }
+
+  .blake-quote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px, 2vw, 20px);
+    font-style: italic;
+    color: var(--white-dim);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .blake-quote cite {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  /* ── CTA ── */
+  #cta {
+    background: var(--dark);
+    text-align: center;
+    border-bottom: none;
+  }
+
+  .cta-box {
+    border: 1px dashed var(--amber);
+    padding: 60px 40px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .cta-text {
+    font-size: 15px;
+    color: var(--white-dim);
+    margin-bottom: 16px;
+  }
+
+  .cta-text a {
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1px solid var(--amber-dim);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .cta-text a:hover { color: var(--amber-light); border-color: var(--amber-light); }
+
+  .cta-headline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .cta-headline span { color: var(--amber); }
+
+  .event-details {
+    margin: 28px 0 24px;
+  }
+
+  .event-line {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1.7;
+  }
+
+  .event-icon { color: var(--amber); margin-right: 8px; }
+
+  .cta-button {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--amber);
+    padding: 14px 36px;
+    text-decoration: none;
+    margin: 8px 0 36px;
+    transition: background 0.2s;
+  }
+
+  .cta-button:hover { background: var(--amber-light); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 32px 0;
+    border-top: 1px solid var(--rule-light);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-left {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+  }
+
+  .footer-right {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  [data-delay="1"] { animation-delay: 0.1s; }
+  [data-delay="2"] { animation-delay: 0.25s; }
+  [data-delay="3"] { animation-delay: 0.4s; }
+  [data-delay="4"] { animation-delay: 0.55s; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 40px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: rgba(10,8,5,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule-light);
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    color: var(--white);
+  }
+
+  .nav-brand span { color: var(--amber); }
+
+  .nav-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav { padding: 16px 24px; }
+    .container, .container--wide { padding: 0 24px; }
+    section { padding: 72px 0; }
+    .financial-block { padding: 28px 20px; }
+    .layer-table { font-size: 13px; }
+    .layer-table th, .layer-table td { padding: 12px 10px; }
+    .footer-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .cta-box { padding: 40px 24px; }
+    .blake-quote { padding: 24px 16px 24px 36px; }
+  }
+
+  /* ── DIVIDER ORNAMENT ── */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0;
+  }
+
+  .ornament::before, .ornament::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule-light);
+  }
+
+  .ornament-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--amber);
+    transform: rotate(45deg);
+  }
+
+  /* ── PAGE NUMBER STYLE ── */
+  .page-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber-dim);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .hero-more {
+    margin-top: 28px;
+  }
+
+  .hero-more-link {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--amber-dim);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .hero-more-link:hover { color: var(--amber); border-color: var(--amber); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-tag">Mental Health Reformation Consortium · New Jersey · 2026</div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     STATEMENT OF INTENTION
+══════════════════════════════════════════ -->
+<section id="statement">
+  <div class="container">
+    <span class="page-label">1 / 3 · Statement of Intention</span>
+    <div class="section-label">Statement of Intention</div>
+
+    <h2 class="section-title">Toward a Mental Health<br><span>Reformation</span></h2>
+
+    <p class="intro-large">We stand at a rare and consequential moment.</p>
+
+    <p>The mental health crisis confronting our society is not a marginal issue—it is a defining civil rights challenge of our time. It calls not for incremental reform, but for a courageous re-imagining of how we understand healing, dignity, creativity, and human potential.</p>
+
+    <p>We are sponsoring the initial exploration and formation of a formal, multi-sector Mental Health Reformation Consortium: a lawful, credible, and mission-driven alliance uniting mental health innovators, philanthropists, AI &amp; Blockchain specialists, filmmakers, cultural leaders, artists, activists, policymakers, faith and interfaith voices, legal architects, and public and private-sector partners. This is not an advocacy group in name only, nor a fragmented initiative competing for attention. It is a coherent container—clear in purpose, and will be rigorous in structure, and bold in scope.</p>
+
+    <div class="pull-quote">
+      <p>The intent is simple and radical: to position mental health not as a deficit to be managed, but as a frontier of human rights, creativity, and collective flourishing.</p>
+    </div>
+
+    <p>This consortium will operate as a public–private partnership, intentionally designed to relieve pressure on taxpayers while mobilizing private capital, philanthropic resources, and cultural infrastructure at scale. Its mandate is not merely treatment, but transformation—integrating policy innovation, narrative change, and real-world infrastructure into a unified strategy.</p>
+
+    <hr>
+
+    <div class="inline-heading">A Transmedium Approach</div>
+
+    <p>At the heart of this effort is a transmedium approach: feature films, documentary series, live theater, experiential storytelling, educational toolkits, existing infrastructure, and community-based spaces working together as a single ecosystem. These are not "content verticals," but complementary instruments in a larger cultural intervention—one capable of reshaping public perception, influencing policy, and modeling new systems of care.</p>
+
+    <hr>
+
+    <div class="inline-heading">New Jersey Leads</div>
+
+    <p>New Jersey, uniquely, is positioned to lead this moment. With its history, its cultural infrastructure, its proximity to global media, and its lineage of moral leadership, the state has the opportunity to become both a national model for mental health innovation and a next-generation hub for socially regenerative film, filmanthropy, and media production. This is not aspirational branding; it is a concrete strategy grounded in existing assets, relationships, and executable plans.</p>
+
+    <p>The vision includes the development of purpose-built, regenerative spaces—respite houses and community sanctuaries that function simultaneously as healing environments and film-ready sets. These spaces would be sustainably funded through integrated media production budgets, distribution partnerships, and long-term revenue models that reinvest directly into care. In effect, culture finances healing, and healing generates culture.</p>
+
+    <hr>
+
+    <div class="inline-heading">A Moonshot by Design</div>
+
+    <p>History shows that transformative change does not arise from caution alone. It arises when vision is matched with credibility, when ambition is paired with structure, and when leaders are willing to stand publicly for something larger than personal or institutional gain.</p>
+
+    <p>We are not proposing this because it is easy. We are proposing it because it is necessary.</p>
+
+    <p>If the answer is no, let it be no to the full vision—not to a diluted version. But if the answer is yes, then this moment represents more than a project. It represents a legacy opportunity: to help midwife a new chapter in how society understands mental health, human dignity, and collective responsibility.</p>
+
+    <div class="ornament"><div class="ornament-dot"></div></div>
+
+    <p>This is an invitation—not to invest in a product, but to participate in a turning point.</p>
+    <p>A mental health reformation.<br>A cultural re-authoring.<br>A civil rights moviement for the soul.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE CONSORTIUM
+══════════════════════════════════════════ -->
+<section id="consortium">
+  <div class="container--wide">
+    <div class="container" style="padding:0;">
+      <span class="page-label">2 / 3 · The Mental Health Reformation Consortium</span>
+      <div class="section-label">Stone Synergy Soup</div>
+      <h2 class="section-title">The Mental Health<br>Reformation <span>Consortium</span></h2>
+    </div>
+
+    <div class="container" style="padding:0;">
+      <div class="inline-heading">The Uncomfortable Truth</div>
+
+      <p>New Jersey is projected to spend $4.5 billion over the next five years on just 14,000 of its most vulnerable citizens — those with serious mental illness trapped in a revolving door of crisis, hospitalization, and incarceration. The current system is not only financially unsustainable; it is a moral failure. It treats human beings as problems to be managed, not as people with potential to be unlocked.</p>
+
+      <hr>
+
+      <div class="inline-heading">A Coherent Alternative</div>
+
+      <p>We are not proposing another fragmented program. We are building a new form of community infrastructure — a public-private alliance designed for both healing and financial self-sufficiency. Our model is built on five integrated layers:</p>
+    </div>
+
+    <div class="container" style="padding:0; overflow-x:auto;">
+      <table class="layer-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Function</th>
+            <th>Value Proposition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Physical Infrastructure</td>
+            <td>A distributed network of peer-run respite houses and community properties held in a Community Land Trust.</td>
+            <td>From rented beds to owned assets.</td>
+          </tr>
+          <tr>
+            <td>2. Peer Community</td>
+            <td>A "distributed village" of people with lived experience, fostering connection, purpose, and an internal economy.</td>
+            <td>From isolation to belonging.</td>
+          </tr>
+          <tr>
+            <td>3. Internal Economy</td>
+            <td>On-site food production, skill-sharing, and peer-to-peer services that create jobs and reduce operating costs.</td>
+            <td>From dependency to self-sufficiency.</td>
+          </tr>
+          <tr>
+            <td>4. Regenerative Filmmaking</td>
+            <td>A living documentary of the reformation, where production budgets build permanent community assets and media revenue funds care.</td>
+            <td>From extractive storytelling to regenerative culture.</td>
+          </tr>
+          <tr>
+            <td>5. AI-Powered Coordination</td>
+            <td>A people-informed knowledge graph (Bonfires AI) that maps resources, identifies crisis patterns, and reduces system fragmentation.</td>
+            <td>From a disconnected system to an intelligent one.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="container" style="padding:0;">
+      <hr>
+      <div class="inline-heading">The Financial Case</div>
+      <p>This is not just a moral argument. It is a sound financial one.</p>
+
+      <div class="financial-block">
+        <div class="financial-row">
+          <div class="financial-label">Current System (Status Quo) — Annual Cost</div>
+          <div class="financial-value">$910,000,000</div>
+        </div>
+        <div class="financial-row">
+          <div class="financial-label">Proposed Community Model — Annual Cost</div>
+          <div class="financial-value">$408,000,000</div>
+        </div>
+        <div class="financial-row">
+          <div class="financial-label">Projected Annual Savings</div>
+          <div class="financial-value savings">$502,000,000</div>
+        </div>
+        <p class="financial-note">A one-time capital investment of $77 million to purchase the initial real estate portfolio would be paid back in less than two months of operational savings.</p>
+      </div>
+
+      <hr>
+
+      <div class="inline-heading">The Invitation</div>
+
+      <p>We are convening the founding cross-sector roundtable in New Jersey in 2026 to find our first major "Filmanthropist" and to design and launch the first pilot community. We are not seeking passive investment. We are seeking active partners in a historic turning point.</p>
+
+      <p><strong>This is an invitation to move beyond debate and begin to build.</strong></p>
+      <div class="cta-box" style="text-align:center; margin-top:40px;">
+        <div class="cta-headline">Join the<br><span>Founding Roundtable</span></div>
+
+        <div class="event-details">
+          <div class="event-line"><span class="event-icon">▪</span> Thursday, June 18th · 4pm – 6pm</div>
+          <div class="event-line"><span class="event-icon">▪</span> Monmouth County, New Jersey</div>
+        </div>
+
+        <a href="https://luma.com/889fp8tt" target="_blank" rel="noopener" class="cta-button">Register for the Event →</a>
+
+        <p class="cta-text">We would be so grateful if you would consider committing to come.</p>
+        <p class="cta-text">Please do share with resonant friends and family — and bring someone with you!</p>
+        <p class="cta-text">Questions? Reach out to Bret at <a href="mailto:bret@bretwarshawsky.com">bret@bretwarshawsky.com</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE PARABLE & THE INVITATION
+══════════════════════════════════════════ -->
+<section id="parable">
+  <div class="container">
+    <span class="page-label">3 / 3 · The Parable &amp; The Invitation</span>
+    <div class="section-label">The Stone Soup Parable</div>
+
+    <h2 class="stone-title">Stone <span>Soup</span></h2>
+
+    <div class="parable-text">
+      <p>There is an old story — told in many cultures, in many languages — about a traveler who arrives in a village carrying nothing but an empty pot and a single stone. The village is gripped by scarcity. Doors are shut. Larders are locked. No one has enough, and no one is willing to share.</p>
+
+      <p>The traveler sets the pot over a fire, fills it with water, and drops in the stone. "I am making stone soup," he says. "It is almost ready — but it would be even better with just a small carrot." Curious, a villager brings a carrot. Then another offers an onion. Someone else adds a handful of barley. A farmer contributes a bone. A child brings herbs from the garden.</p>
+
+      <p>By nightfall, the whole village is gathered around the fire, sharing a rich and nourishing feast — made from nothing but a stone and the willingness of each person to bring what they had.</p>
+    </div>
+
+    <div class="highlighted-block">
+      <p>The stone was never the ingredient. The stone was the invitation. The soup was always already there — waiting in the hands of the community.</p>
+    </div>
+
+    <div class="parable-text">
+      <p>This is the spirit of the Mental Health Reformation Consortium. We are not arriving with all the answers. We are arriving with a stone, a fire, and an open pot. Every person who shows up brings an ingredient. Every ingredient changes the flavor of what is possible. Together, we make something none of us could make alone.</p>
+    </div>
+
+    <div class="call-lines">
+      <p>We are the medicine.</p>
+      <p>Bring your ingredient.</p>
+      <p>The soup is already on.</p>
+    </div>
+
+    <div class="blake-quote">
+      <p><em>I must Create a System, or be enslav'd by another Man's.<br>
+      I will not Reason &amp; Compare: my business is to Create.</em></p>
+      <cite>— William Blake</cite>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <div class="container" style="text-align:center;">
+    <div class="footer-left" style="display:inline; color:var(--white-dim);">Mental Health Reformation Consortium · New Jersey · 2026</div>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for scroll-triggered fade-ins
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.style.opacity = '1';
+        el.target.style.transform = 'translateY(0)';
+        observer.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('h2, .inline-heading, .pull-quote, .financial-block, .layer-table, .highlighted-block, .call-lines, .blake-quote').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
