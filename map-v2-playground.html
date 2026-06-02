@@ -714,6 +714,31 @@ body {
 }
 #pot-cancel-btn:hover { background: rgba(255,255,255,0.14); }
 
+/* ── Ingredient list action buttons ── */
+.ing-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ing-list-item:hover .ing-item-actions { opacity: 1; }
+.ing-action-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0; line-height: 1;
+}
+.ing-action-btn:hover { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+.ing-action-btn.del:hover { background: rgba(239,68,68,0.2); color: rgba(239,100,100,1); }
+
 /* ── Export / Import ── */
 #data-controls {
   position: fixed;
@@ -1224,6 +1249,8 @@ function openPotModal() {
 
 function closePotModal() {
   potModalOpen = false;
+  editingIdx = -1;
+  document.getElementById('pot-save-btn').textContent = 'Save';
   document.getElementById('pot-modal').classList.remove('open');
   document.getElementById('pot-add-form').classList.remove('visible');
   document.getElementById('pot-text-input').value = '';
@@ -1257,23 +1284,79 @@ function renderModalList() {
     return '<div class="ing-list-item" data-idx="' + i + '">' +
       '<div class="ing-list-dot" style="background:' + ing.color + '"></div>' +
       '<div class="ing-list-text">' + ing.text + '</div>' +
+      '<div class="ing-item-actions">' +
+        '<button class="ing-action-btn edit-btn" data-idx="' + i + '" title="Edit">&#x270F;&#xFE0F;</button>' +
+        '<button class="ing-action-btn del del-btn" data-idx="' + i + '" title="Delete">&#x1F5D1;</button>' +
+      '</div>' +
     '</div>';
   }).join('');
   list.querySelectorAll('.ing-list-item').forEach(function(item) {
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function(e) {
+      if (e.target.closest('.ing-item-actions')) return;
       openIngredientPanel(ingredients[+item.dataset.idx], +item.dataset.idx);
+    });
+  });
+  list.querySelectorAll('.edit-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      editIngredient(+btn.dataset.idx);
+    });
+  });
+  list.querySelectorAll('.del-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      deleteIngredient(+btn.dataset.idx);
     });
   });
 }
 
-// ── Add ingredient ────────────────────────────────────────────────────────────
+// ── Add / edit ingredient ─────────────────────────────────────────────────────
+var editingIdx = -1;
+
+function checkPassword() {
+  return prompt('Password required:') === '999';
+}
+
+function editIngredient(idx) {
+  if (!checkPassword()) { alert('Incorrect password.'); return; }
+  editingIdx = idx;
+  document.getElementById('pot-text-input').value = ingredients[idx].text;
+  document.getElementById('pot-save-btn').textContent = 'Update';
+  var form = document.getElementById('pot-add-form');
+  form.classList.add('visible');
+  setTimeout(function() { document.getElementById('pot-text-input').focus(); }, 50);
+}
+
+function deleteIngredient(idx) {
+  if (!checkPassword()) { alert('Incorrect password.'); return; }
+  ingredients.splice(idx, 1);
+  saveIngredients(ingredients);
+  renderMapDots();
+  renderModalDots();
+  renderModalList();
+}
+
 function commitIngredient(text) {
   text = text.trim();
   if (!text) return;
-  ingredients.push({ id: 'ing_' + Date.now(), text: text, color: ingColor(ingredients.length) });
+  var wasEditing = editingIdx >= 0;
+  if (wasEditing) {
+    ingredients[editingIdx].text = text;
+    editingIdx = -1;
+    document.getElementById('pot-save-btn').textContent = 'Save';
+  } else {
+    ingredients.push({ id: 'ing_' + Date.now(), text: text, color: ingColor(ingredients.length) });
+  }
   saveIngredients(ingredients);
   renderMapDots();
-  closePotModal();
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+  if (wasEditing) {
+    renderModalDots();
+    renderModalList();
+  } else {
+    closePotModal();
+  }
 }
 
 // ── Export / Import ───────────────────────────────────────────────────────────
@@ -1312,6 +1395,8 @@ document.getElementById('pot-add-btn').addEventListener('click', function() {
   setTimeout(function(){ document.getElementById('pot-text-input').focus(); }, 50);
 });
 document.getElementById('pot-cancel-btn').addEventListener('click', function() {
+  editingIdx = -1;
+  document.getElementById('pot-save-btn').textContent = 'Save';
   document.getElementById('pot-add-form').classList.remove('visible');
   document.getElementById('pot-text-input').value = '';
 });
