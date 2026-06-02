@@ -313,9 +313,9 @@ body {
 /* ── All Pillars panel (left) ── */
 #all-panel {
   position: fixed;
-  left: 22px;
+  right: 22px;
   top: 50%;
-  transform: translateY(-50%) translateX(calc(-100% - 22px));
+  transform: translateY(-50%) translateX(calc(100% + 22px));
   width: 375px;
   max-height: 90vh;
   background: rgba(6,6,18,0.97);
@@ -325,7 +325,7 @@ body {
   z-index: 200;
   overflow-y: auto;
   transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 10px 0 60px rgba(0,0,0,0.7);
+  box-shadow: -10px 0 60px rgba(0,0,0,0.7);
 }
 #all-panel.open {
   transform: translateY(-50%) translateX(0);
@@ -807,13 +807,15 @@ function buildAllContent() {
 
 function toggleAll() {
   allOpen = !allOpen;
-  document.getElementById('btn-all').textContent = allOpen ? '✕ Close All Pillars' : '☰ View All Pillars';
+  var btn = document.getElementById('btn-all');
   var panel = document.getElementById('all-panel');
   if (allOpen) {
     buildAllContent();
     panel.classList.add('open');
+    btn.style.visibility = 'hidden';
   } else {
     panel.classList.remove('open');
+    btn.style.visibility = 'visible';
   }
 }
 
