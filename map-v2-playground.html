@@ -471,6 +471,275 @@ body {
 ::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 3px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 3px; }
 
+/* ── Ingredient dots (main map, inside pot) ── */
+.ing-dot {
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.65);
+  cursor: pointer;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; font-weight: bold; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.ing-dot:hover {
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  z-index: 6;
+}
+
+/* ── Pot modal ── */
+#pot-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+#pot-modal.open { opacity: 1; pointer-events: all; }
+
+#pot-modal-dialog {
+  background: rgba(6,6,18,0.98);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  width: min(820px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  animation: potModalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes potModalIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+#pot-modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none; color: #fff;
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+#pot-modal-close:hover { background: rgba(255,255,255,0.22); }
+
+/* Modal left: pot visual */
+#pot-modal-left {
+  width: 295px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 38px 20px 30px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  gap: 12px;
+}
+#pot-modal-bowl {
+  width: 230px; height: 230px;
+  border-radius: 50%;
+  background: url('images/stone-soup-nj.png') center 38%/cover no-repeat;
+  border: 3px solid #D4A044;
+  box-shadow: 0 0 30px rgba(212,160,68,0.45), 0 0 70px rgba(212,160,68,0.15);
+  position: relative;
+  flex-shrink: 0;
+}
+.ing-dot-modal {
+  position: absolute;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: bold; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  transform: translate(-50%, -50%);
+  transition: transform 0.18s, box-shadow 0.18s;
+  z-index: 2;
+}
+.ing-dot-modal:hover {
+  transform: translate(-50%, -50%) scale(1.25);
+  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  z-index: 3;
+}
+#pot-modal-bowl-hint {
+  color: rgba(255,255,255,0.28);
+  font-size: 10px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Modal right: ingredient list + controls */
+#pot-modal-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 24px;
+  overflow-y: auto;
+  min-width: 0;
+}
+#pot-modal-heading {
+  color: #D4A044;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin-bottom: 3px;
+}
+#pot-modal-subheading {
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin-bottom: 18px;
+  letter-spacing: 0.4px;
+}
+#pot-ing-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-y: auto;
+}
+.ing-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.ing-list-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); }
+.ing-list-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.ing-list-text {
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  line-height: 1.55;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.ing-empty {
+  color: rgba(255,255,255,0.22);
+  font-size: 12px;
+  font-style: italic;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-align: center;
+  padding: 24px 0;
+}
+#pot-add-btn {
+  align-self: flex-start;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, #3d1505, #8B4513);
+  color: #D4A044;
+  border: 1px solid rgba(212,160,68,0.4);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: all 0.2s;
+}
+#pot-add-btn:hover { background: linear-gradient(135deg, #5d2209, #a0521e); border-color: rgba(212,160,68,0.7); }
+#pot-add-form {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+#pot-add-form.visible { display: flex; }
+#pot-text-input {
+  width: 100%;
+  min-height: 80px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.55;
+}
+#pot-text-input:focus { border-color: rgba(212,160,68,0.5); }
+#pot-text-input::placeholder { color: rgba(255,255,255,0.22); }
+#pot-form-btns { display: flex; gap: 8px; align-items: center; }
+#pot-form-hint { color: rgba(255,255,255,0.25); font-size: 10px; font-family: 'Segoe UI', system-ui, sans-serif; }
+#pot-save-btn {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #D4A044, #c4882a);
+  color: #fff; border: none; border-radius: 16px;
+  font-size: 12px; font-weight: bold; cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+  transition: filter 0.2s;
+}
+#pot-save-btn:hover { filter: brightness(1.12); }
+#pot-cancel-btn {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.55);
+  border: none; border-radius: 16px;
+  font-size: 12px; cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: background 0.2s;
+}
+#pot-cancel-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* ── Export / Import ── */
+#data-controls {
+  position: fixed;
+  bottom: 58px;
+  left: 22px;
+  display: flex;
+  gap: 6px;
+  z-index: 400;
+}
+.data-btn {
+  padding: 5px 11px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 14px;
+  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.data-btn:hover { border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); }
+#import-label input[type=file] { display: none; }
+
 /* ── V2 Playground badge ── */
 #v2-badge {
   position: fixed;
@@ -544,6 +813,37 @@ body {
 </div>
 
 <button id="btn-all">&#9776; View All Pillars</button>
+
+<!-- ── Pot modal ── -->
+<div id="pot-modal">
+  <div id="pot-modal-dialog">
+    <button id="pot-modal-close">&#x2715;</button>
+    <div id="pot-modal-left">
+      <div id="pot-modal-bowl"></div>
+      <div id="pot-modal-bowl-hint">Click any ingredient to view &nbsp;·&nbsp; Click outside to close</div>
+    </div>
+    <div id="pot-modal-right">
+      <div id="pot-modal-heading">&#x1F372; Ingredients</div>
+      <div id="pot-modal-subheading">What goes into the soup?</div>
+      <div id="pot-ing-list"></div>
+      <button id="pot-add-btn">+ Add Ingredient</button>
+      <div id="pot-add-form">
+        <textarea id="pot-text-input" placeholder="Describe your ingredient — a person, an idea, a resource, a connection..."></textarea>
+        <div id="pot-form-btns">
+          <button id="pot-save-btn">Save</button>
+          <button id="pot-cancel-btn">Cancel</button>
+          <span id="pot-form-hint">or Ctrl+Enter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Export / Import ── -->
+<div id="data-controls">
+  <button class="data-btn" id="export-btn">&#8595; Export</button>
+  <label class="data-btn" id="import-label">&#8593; Import<input type="file" id="import-input" accept=".json"></label>
+</div>
 
 <script>
 var PILLARS = [
@@ -773,17 +1073,7 @@ function closePanel() {
 
 document.getElementById('center').addEventListener('click', function() {
   closePanel();
-  PILLARS.forEach(function(p, i) {
-    setTimeout(function() {
-      var el = document.getElementById('pillar-' + p.id);
-      el.classList.add('active');
-      setLineHighlight(p.id, true);
-      setTimeout(function() {
-        el.classList.remove('active');
-        setLineHighlight(p.id, false);
-      }, 600);
-    }, i * 100);
-  });
+  openPotModal();
 });
 
 var allOpen = false;
@@ -865,6 +1155,178 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// ── Ingredients ──────────────────────────────────────────────────────────────
+var ING_KEY = 'sss_ingredients_v1';
+var ING_COLORS = ['#F59E0B','#10B981','#3B82F6','#EC4899','#8B5CF6','#F97316','#06B6D4','#84CC16','#EF4444','#A78BFA'];
+
+// Positions as % of center div (208px). Clustered in the pot's soup bowl area.
+var ING_SPOTS = [
+  {l:38,t:52},{l:54,t:50},{l:46,t:61},{l:30,t:58},
+  {l:62,t:55},{l:40,t:68},{l:56,t:67},{l:33,t:42},
+  {l:60,t:43},{l:47,t:74},{l:27,t:64},{l:64,t:69}
+];
+
+function saveIngredients(list) {
+  try { localStorage.setItem(ING_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function loadIngredients() {
+  try { var r = localStorage.getItem(ING_KEY); return r ? JSON.parse(r) : []; }
+  catch(e) { return []; }
+}
+
+var ingredients = loadIngredients();
+
+function ingColor(i)  { return ING_COLORS[i % ING_COLORS.length]; }
+function ingSpot(i)   { return ING_SPOTS[i % ING_SPOTS.length]; }
+
+// ── Render mini dots inside the main-map center pot ──────────────────────────
+function renderMapDots() {
+  document.querySelectorAll('.ing-dot').forEach(function(d){ d.remove(); });
+  var ctr = document.getElementById('center');
+  ingredients.forEach(function(ing, i) {
+    var s = ingSpot(i);
+    var dot = document.createElement('div');
+    dot.className = 'ing-dot';
+    dot.style.cssText = 'background:' + ing.color + ';left:' + s.l + '%;top:' + s.t + '%;';
+    dot.textContent = i + 1;
+    dot.title = ing.text.slice(0,80) + (ing.text.length > 80 ? '…' : '');
+    dot.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openIngredientPanel(ing, i);
+    });
+    ctr.appendChild(dot);
+  });
+}
+
+// ── Open side panel with ingredient content ──────────────────────────────────
+function openIngredientPanel(ing, idx) {
+  closePotModal();
+  document.querySelectorAll('.pillar').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('panel-icon').textContent = '🥄';
+  document.getElementById('panel-title').textContent = 'Ingredient #' + (idx + 1);
+  document.getElementById('panel-bar').style.background = ing.color;
+  document.getElementById('panel-list').innerHTML =
+    '<li><div class="p-dot" style="background:' + ing.color + '"></div><span>' + ing.text + '</span></li>';
+  document.getElementById('panel-links').style.display = 'none';
+  document.getElementById('panel').classList.add('open');
+}
+
+// ── Pot modal ────────────────────────────────────────────────────────────────
+var potModalOpen = false;
+
+function openPotModal() {
+  potModalOpen = true;
+  renderModalDots();
+  renderModalList();
+  document.getElementById('pot-modal').classList.add('open');
+}
+
+function closePotModal() {
+  potModalOpen = false;
+  document.getElementById('pot-modal').classList.remove('open');
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+}
+
+function renderModalDots() {
+  var bowl = document.getElementById('pot-modal-bowl');
+  bowl.querySelectorAll('.ing-dot-modal').forEach(function(d){ d.remove(); });
+  ingredients.forEach(function(ing, i) {
+    var s = ingSpot(i);
+    var dot = document.createElement('div');
+    dot.className = 'ing-dot-modal';
+    dot.style.cssText = 'background:' + ing.color + ';left:' + s.l + '%;top:' + s.t + '%;';
+    dot.textContent = i + 1;
+    dot.title = ing.text.slice(0,60);
+    dot.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openIngredientPanel(ing, i);
+    });
+    bowl.appendChild(dot);
+  });
+}
+
+function renderModalList() {
+  var list = document.getElementById('pot-ing-list');
+  if (!ingredients.length) {
+    list.innerHTML = '<div class="ing-empty">No ingredients yet — add the first one below!</div>';
+    return;
+  }
+  list.innerHTML = ingredients.map(function(ing, i) {
+    return '<div class="ing-list-item" data-idx="' + i + '">' +
+      '<div class="ing-list-dot" style="background:' + ing.color + '"></div>' +
+      '<div class="ing-list-text">' + ing.text + '</div>' +
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.ing-list-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      openIngredientPanel(ingredients[+item.dataset.idx], +item.dataset.idx);
+    });
+  });
+}
+
+// ── Add ingredient ────────────────────────────────────────────────────────────
+function commitIngredient(text) {
+  text = text.trim();
+  if (!text) return;
+  ingredients.push({ id: 'ing_' + Date.now(), text: text, color: ingColor(ingredients.length) });
+  saveIngredients(ingredients);
+  renderMapDots();
+  closePotModal();
+}
+
+// ── Export / Import ───────────────────────────────────────────────────────────
+function exportIngredients() {
+  var data = JSON.stringify({ version: 1, exported: new Date().toISOString(), ingredients: ingredients }, null, 2);
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+  a.download = 'stone-synergy-soup-ingredients.json';
+  a.click();
+}
+
+function importIngredients(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var raw = JSON.parse(e.target.result);
+      var list = Array.isArray(raw) ? raw : (raw.ingredients || []);
+      if (!Array.isArray(list)) throw '';
+      ingredients = list;
+      saveIngredients(ingredients);
+      renderMapDots();
+      if (potModalOpen) { renderModalDots(); renderModalList(); }
+      alert('Imported ' + list.length + ' ingredient' + (list.length === 1 ? '' : 's') + '.');
+    } catch(_) { alert('Could not read file — make sure it\'s a valid export.'); }
+  };
+  reader.readAsText(file);
+}
+
+// ── Wire up modal events ──────────────────────────────────────────────────────
+document.getElementById('pot-modal-close').addEventListener('click', closePotModal);
+document.getElementById('pot-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePotModal();
+});
+document.getElementById('pot-add-btn').addEventListener('click', function() {
+  document.getElementById('pot-add-form').classList.add('visible');
+  setTimeout(function(){ document.getElementById('pot-text-input').focus(); }, 50);
+});
+document.getElementById('pot-cancel-btn').addEventListener('click', function() {
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+});
+document.getElementById('pot-save-btn').addEventListener('click', function() {
+  commitIngredient(document.getElementById('pot-text-input').value);
+});
+document.getElementById('pot-text-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) commitIngredient(this.value);
+});
+document.getElementById('export-btn').addEventListener('click', exportIngredients);
+document.getElementById('import-input').addEventListener('change', function() {
+  if (this.files[0]) { importIngredients(this.files[0]); this.value = ''; }
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
 drawLines();
 renderPillars();
 </script>
