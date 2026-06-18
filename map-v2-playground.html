@@ -310,6 +310,45 @@ body {
   text-decoration: underline;
 }
 
+.panel-intro {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.panel-intro-header {
+  color: rgba(140,180,255,0.85);
+  font-size: 12px;
+  text-decoration: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.panel-intro-header:hover {
+  color: rgba(180,210,255,1);
+  text-decoration: underline;
+}
+.panel-intro-tagline {
+  color: rgba(255,255,255,0.90);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 7px;
+  line-height: 1.4;
+}
+.panel-intro-desc {
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+}
+.panel-link-inline {
+  color: rgba(140,180,255,0.85);
+  text-decoration: none;
+}
+.panel-link-inline:hover {
+  color: rgba(180,210,255,1);
+  text-decoration: underline;
+}
+
 /* ── All Pillars panel (left) ── */
 #all-panel {
   position: fixed;
@@ -826,6 +865,7 @@ body {
       <div class="panel-bar" id="panel-bar"></div>
     </div>
   </div>
+  <div id="panel-intro" style="display:none"></div>
   <ul class="panel-list" id="panel-list"></ul>
   <div class="panel-links" id="panel-links" style="display:none"></div>
 </div>
@@ -893,15 +933,19 @@ var PILLARS = [
     color: '#8B5CF6',
     glowColor: 'rgba(139,92,246,0.65)',
     angle: -30,
+    intro: {
+      headerText: 'New Jersey Department of State — NJ Faith Action Center',
+      headerUrl: 'https://www.nj.gov/state/fac/index.shtml',
+      tagline: 'Strengthening Communities Through Faith in Action',
+      description: 'Connecting faith-based organizations with the resources, partnerships, and support needed to serve communities more effectively.'
+    },
     bullets: [
-      'Connecting chaplains & clergy with first responders and behavioral health professionals in the community',
-      'Placing lived experiencers at the center of faith-based outreach and care',
-      'Synergy with NJ A.W.A.R.E., We Are Monmouth & NAMI FaithNet — Pathways to Hope',
-      'Training faith communities as trusted frontline mental health connectors',
+      'FAC Advisory Councils, Regional Faith Networks, FAC Academy, Dr. Semaj Y. Vanzant, Sr., Executive Director — <a class="panel-link-inline" href="https://www.nj.gov/state/fac/index.shtml" target="_blank" rel="noopener">NJ Faith Action Center</a>',
+      'Synergy with NJ A.W.A.R.E., We Are Monmouth &amp; NAMI FaithNet — Pathways to Hope. Together WE expand FAC impact on the spiritual side of mental health in NJ Communities.',
+      'Together WE connect chaplains &amp; clergy with first responders and behavioral health professionals to better serve the spiritual &amp; religious side of mental health in the community.',
+      'People helping people — <a class="panel-link-inline" href="https://www.youtube.com/watch?v=f7Stz-jbyMw" target="_blank" rel="noopener">Dr. Dale Caldwell NJ FAITH ACTION CENTER Ocean Grove, NJ 4/29/26</a>',
     ],
-    links: [
-      { text: 'NAMI FaithNet — Pathways to Hope', url: 'https://www.nami.org/community-and-culture/nami-faithnet/pathways-to-hope/' }
-    ]
+    links: []
   },
   {
     id: 'mentalhealth',
@@ -1071,6 +1115,18 @@ function openPanel(p) {
   document.getElementById('panel-title').textContent = p.label;
   document.getElementById('panel-bar').style.background = p.color;
 
+  var introEl = document.getElementById('panel-intro');
+  if (p.intro) {
+    introEl.style.display = 'block';
+    introEl.innerHTML =
+      '<a class="panel-intro-header" href="' + p.intro.headerUrl + '" target="_blank" rel="noopener">&#8599; ' + p.intro.headerText + '</a>' +
+      '<p class="panel-intro-tagline">' + p.intro.tagline + '</p>' +
+      '<p class="panel-intro-desc">' + p.intro.description + '</p>';
+  } else {
+    introEl.style.display = 'none';
+    introEl.innerHTML = '';
+  }
+
   var list = document.getElementById('panel-list');
   list.innerHTML = p.bullets.map(function(b) {
     return '<li><div class="p-dot" style="background:' + p.color + '"></div><span>' + b + '</span></li>';
@@ -1107,6 +1163,11 @@ function buildAllContent() {
   var wrap = document.getElementById('all-content');
   if (wrap.innerHTML) return;
   wrap.innerHTML = PILLARS.map(function(p) {
+    var introHtml = p.intro
+      ? '<a class="panel-intro-header" href="' + p.intro.headerUrl + '" target="_blank" rel="noopener">&#8599; ' + p.intro.headerText + '</a>' +
+        '<p class="panel-intro-tagline">' + p.intro.tagline + '</p>' +
+        '<p class="panel-intro-desc" style="margin-bottom:10px">' + p.intro.description + '</p>'
+      : '';
     var bulletHtml = p.bullets.map(function(b) {
       return '<li>' + b + '</li>';
     }).join('');
@@ -1119,6 +1180,7 @@ function buildAllContent() {
           '<span class="all-item-icon">' + p.icon + '</span>' +
           '<span class="all-item-title" style="color:' + p.color + '">' + p.label + '</span>' +
         '</div>' +
+        introHtml +
         '<ul class="all-bullets">' + bulletHtml + '</ul>' +
         linkHtml +
       '</div>'
