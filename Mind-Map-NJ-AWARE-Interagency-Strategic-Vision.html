@@ -495,6 +495,11 @@ body {
   letter-spacing: 4px;
   text-transform: uppercase;
   text-shadow: 0 0 30px rgba(212,160,68,0.65);
+  pointer-events: all;
+  cursor: pointer;
+}
+#header h1:hover {
+  text-shadow: 0 0 40px rgba(212,160,68,1), 0 0 8px rgba(212,160,68,0.5);
 }
 #header p {
   color: rgba(255,255,255,0.38);
@@ -528,6 +533,68 @@ body {
   transform: translate(-50%, -50%) scale(1.5);
   box-shadow: 0 0 8px rgba(255,255,255,0.5);
   z-index: 6;
+}
+
+/* ── Story modal ── */
+#story-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+#story-modal.open { opacity: 1; pointer-events: all; }
+#story-modal-dialog {
+  background: rgba(6,6,18,0.98);
+  border: 1px solid rgba(212,160,68,0.25);
+  border-radius: 14px;
+  padding: 44px 48px 40px;
+  max-width: 560px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  animation: potModalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+#story-modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+#story-modal-close:hover { background: rgba(255,255,255,0.22); }
+#story-modal-title {
+  font-size: 22px;
+  color: #D4A044;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+#story-modal-body p {
+  color: rgba(255,255,255,0.78);
+  font-size: 14px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+#story-modal-body p:last-child { margin-bottom: 0; }
+#story-modal-closing {
+  color: rgba(212,160,68,0.85) !important;
+  font-style: italic;
+  border-top: 1px solid rgba(212,160,68,0.15);
+  padding-top: 16px;
+  margin-top: 4px;
 }
 
 /* ── Pot modal ── */
@@ -848,6 +915,20 @@ body {
         <div class="steam-wisp"></div>
       </div>
       <div class="center-hint-bar">Click to animate all</div>
+    </div>
+  </div>
+</div>
+
+<!-- Story modal -->
+<div id="story-modal">
+  <div id="story-modal-dialog">
+    <button id="story-modal-close">&#x2715;</button>
+    <h2 id="story-modal-title">Stone Soup</h2>
+    <div id="story-modal-body">
+      <p>There is an old story — told in many cultures, in many languages — about a traveler who arrives in a village carrying nothing but an empty pot and a single stone. The village is gripped by scarcity. Doors are shut. Larders are locked. No one has enough, and no one is willing to share.</p>
+      <p>The traveler sets the pot over a fire, fills it with water, and drops in the stone. "I am making stone soup," he says. "It is almost ready — but it would be even better with just a small carrot." Curious, a villager brings a carrot. Then another offers an onion. Someone else adds a handful of barley. A farmer contributes a bone. A child brings herbs from the garden.</p>
+      <p>By nightfall, the whole village is gathered around the fire, sharing a rich and nourishing feast — made from nothing but a stone and the willingness of each person to bring what they had.</p>
+      <p id="story-modal-closing">The stone was never the ingredient. The stone was the invitation. The soup was always already there — waiting in the hands of the community.</p>
     </div>
   </div>
 </div>
@@ -1438,7 +1519,7 @@ function importIngredients(file) {
   reader.readAsText(file);
 }
 
-// ── Wire up modal events ──────────────────────────────────────────────────────
+// ── Wire up pot modal events ─────────────────────────────────────────────────
 document.getElementById('pot-modal-close').addEventListener('click', closePotModal);
 document.getElementById('pot-modal').addEventListener('click', function(e) {
   if (e.target === this) closePotModal();
@@ -1462,6 +1543,20 @@ document.getElementById('pot-text-input').addEventListener('keydown', function(e
 document.getElementById('export-btn').addEventListener('click', exportIngredients);
 document.getElementById('import-input').addEventListener('change', function() {
   if (this.files[0]) { importIngredients(this.files[0]); this.value = ''; }
+});
+
+// ── Story modal ───────────────────────────────────────────────────────────────
+document.getElementById('header').querySelector('h1').addEventListener('click', function() {
+  document.getElementById('story-modal').classList.add('open');
+});
+document.getElementById('story-modal-close').addEventListener('click', function() {
+  document.getElementById('story-modal').classList.remove('open');
+});
+document.getElementById('story-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.getElementById('story-modal').classList.remove('open');
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
