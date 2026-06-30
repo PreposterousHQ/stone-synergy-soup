@@ -1844,7 +1844,7 @@ function drillOut() {
 function renderChildMap(p) {
   if (!childData[p.id] || childData[p.id].length === 0) {
     childData[p.id] = [1,2,3,4,5].map(function(n) {
-      return { id: "cn_d"+n+"_"+p.id, title: "Node "+n, body: "", link: "" };
+      return { id: "cn_d"+n+"_"+p.id, title: "Theme", body: "", link: "" };
     });
     saveChildren();
   }
@@ -1858,7 +1858,7 @@ function renderChildMap(p) {
       var hint = document.createElement('div');
       hint.id = 'child-empty-hint';
       hint.style.cssText = 'position:absolute;left:50%;top:calc(50% + 130px);transform:translateX(-50%);color:rgba(255,255,255,0.28);font-size:11px;letter-spacing:1.5px;text-align:center;pointer-events:none;text-transform:uppercase;';
-      hint.textContent = 'Use “+ Add Node” to begin';
+      hint.textContent = 'Use “+ Add Theme” to begin';
       app.appendChild(hint);
     }
     return;
@@ -1932,7 +1932,7 @@ var _cmp = null, _cme = null;
 function openAddChildModal() {
   if (!currentPillar) return;
   _cmp = currentPillar; _cme = null;
-  document.getElementById('child-modal-heading').textContent = 'Add Node — '+currentPillar.name;
+  document.getElementById('child-modal-heading').textContent = 'Add Theme — '+currentPillar.name;
   document.getElementById('child-form-title').value = '';
   document.getElementById('child-form-body').value = '';
   document.getElementById('child-form-link').value = '';
@@ -1943,7 +1943,7 @@ function openAddChildModal() {
 function openChildModal(p, child) {
   _cmp = p; _cme = child;
   closePanel();
-  document.getElementById('child-modal-heading').textContent = 'Edit Node';
+  document.getElementById('child-modal-heading').textContent = 'Edit Theme';
   document.getElementById('child-form-title').value = child.title||'';
   document.getElementById('child-form-body').value = child.body||'';
   document.getElementById('child-form-link').value = child.link||'';
@@ -1981,10 +1981,10 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 <button id="back-btn" onclick="drillOut()">&#8592; Back</button>
-<button id="add-child-btn" onclick="openAddChildModal()">&#43; Add Node</button>
+<button id="add-child-btn" onclick="openAddChildModal()">&#43; Add Theme</button>
 <div id="child-modal">
   <div class="child-modal-box">
-    <div class="child-modal-heading" id="child-modal-heading">Add Node</div>
+    <div class="child-modal-heading" id="child-modal-heading">Add Theme</div>
     <input id="child-form-title" type="text" placeholder="Title *" autocomplete="off">
     <textarea id="child-form-body" placeholder="Body text (optional)"></textarea>
     <input id="child-form-link" type="url" placeholder="https://... (optional)" autocomplete="off">
@@ -2004,6 +2004,7 @@ document.addEventListener('keydown', function(e) {
   </div>
 </div></body>
 </html>
+
 
 
 
