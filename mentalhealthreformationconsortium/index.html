@@ -838,32 +838,6 @@ body {
 .ing-action-btn:hover { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
 .ing-action-btn.del:hover { background: rgba(239,68,68,0.2); color: rgba(239,100,100,1); }
 
-/* â”€â”€ Export / Import â”€â”€ */
-#data-controls {
-  position: fixed;
-  bottom: 58px;
-  left: 22px;
-  display: flex;
-  gap: 6px;
-  z-index: 400;
-}
-.data-btn {
-  padding: 5px 11px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid rgba(255,255,255,0.13);
-  border-radius: 14px;
-  color: rgba(255,255,255,0.4);
-  font-size: 10px;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-transform: uppercase;
-  display: inline-flex; align-items: center; gap: 4px;
-}
-.data-btn:hover { border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); }
-#import-label input[type=file] { display: none; }
-
 /* â”€â”€ V2 Playground badge â”€â”€ */
 #v2-badge {
   position: fixed;
@@ -1074,12 +1048,6 @@ body {
       </div>
     </div>
   </div>
-</div>
-
-<!-- â”€â”€ Export / Import â”€â”€ -->
-<div id="data-controls">
-  <button class="data-btn" id="export-btn">&#8595; Export</button>
-  <label class="data-btn" id="import-label">&#8593; Import<input type="file" id="import-input" accept=".json"></label>
 </div>
 
 <script>
@@ -1658,6 +1626,7 @@ renderPillars();
 </script>
 </body>
 </html>
+
 
 
 
