@@ -441,131 +441,28 @@ body {
   text-decoration: underline;
 }
 
-/* â”€â”€ All Pillars panel (left) â”€â”€ */
-#all-panel {
-  position: fixed;
-  right: 22px;
-  top: 50%;
-  transform: translateY(-50%) translateX(calc(100% + 22px));
-  width: 375px;
-  max-height: 90vh;
-  background: rgba(6,6,18,0.97);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 22px;
-  padding: 26px;
-  z-index: 200;
-  overflow-y: auto;
-  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: -10px 0 60px rgba(0,0,0,0.7);
-}
-#all-panel.open {
-  transform: translateY(-50%) translateX(0);
-}
-
-.all-heading {
-  color: #D4A044;
-  font-size: 13px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  padding-bottom: 16px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.09);
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-
-.all-close {
-  position: absolute;
-  top: 18px; right: 18px;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* â”€â”€ Left panel toggle â”€â”€ */
+#left-panel { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+#left-panel.panel-hidden { transform: translateX(calc(-272px - 44px)); }
+#panel-reveal-tab {
+  position: fixed; top: 20px; left: 0; z-index: 55;
+  background: rgba(6,8,30,0.94);
+  border: 1.5px solid rgba(212,160,68,0.65); border-left: none;
+  border-radius: 0 8px 8px 0;
+  color: #D4A044; font-size: 14px; cursor: pointer;
+  padding: 8px 7px; display: none; line-height: 1;
   transition: background 0.2s;
 }
-.all-close:hover { background: rgba(255,255,255,0.22); }
-
-.all-item {
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+#panel-reveal-tab:hover { background: rgba(212,160,68,0.12); }
+.cs-hide-btn {
+  background: none; border: 1px solid rgba(212,160,68,0.35);
+  color: rgba(212,160,68,0.7); width: 18px; height: 18px;
+  border-radius: 50%; font-size: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s; line-height: 1; padding: 0;
+  font-family: Georgia, serif;
 }
-.all-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-.all-item-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.all-item-header:hover { opacity: 0.8; }
-.all-item-icon { font-size: 22px; }
-.all-item-title {
-  color: #fff;
-  font-size: 11.5px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.35;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-
-.all-bullets {
-  list-style: none;
-  padding-left: 32px;
-}
-.all-bullets li {
-  color: rgba(255,255,255,0.62);
-  font-size: 11px;
-  line-height: 1.65;
-  margin-bottom: 3px;
-  position: relative;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-.all-bullets li::before {
-  content: 'â€¢';
-  position: absolute;
-  left: -14px;
-}
-.all-link {
-  display: block;
-  margin-top: 7px;
-  padding-left: 32px;
-  color: rgba(140,180,255,0.75);
-  font-size: 11px;
-  text-decoration: none;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-.all-link:hover { color: rgba(180,210,255,1); text-decoration: underline; }
-
-/* â”€â”€ Bottom button â”€â”€ */
-#btn-all {
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #6b2e0a 0%, #c4882a 50%, #D4A044 100%);
-  color: #fff;
-  border: none;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 4px 28px rgba(212,160,68,0.5);
-  transition: all 0.3s;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-}
-#btn-all:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 44px rgba(212,160,68,0.75);
-}
+.cs-hide-btn:hover { border-color: #D4A044; color: #D4A044; background: rgba(212,160,68,0.08); }
 
 /* â”€â”€ Header â”€â”€ */
 #header {
@@ -1160,7 +1057,7 @@ body {
 </head>
 <body>
 <div id="left-panel"><div id="calling-sheet">
-  <div class="cs-title">Moviement Calling Sheet<button class="cs-info-btn" id="cs-info-btn" title="What is a Calling Sheet?">i</button></div>
+  <div class="cs-title">Moviement Calling Sheet<div style="display:flex;gap:5px;align-items:center"><button class="cs-info-btn" id="cs-info-btn" title="What is a Calling Sheet?">i</button><button class="cs-hide-btn" id="cs-hide-btn" title="Hide panel" onclick="toggleLeftPanel()">&#8249;</button></div></div>
   <div class="cs-rows"><div class="cs-rows-inner">
   <div class="cs-row"><div class="cs-dot" style="background:#3B82F6"><svg width="15" height="15" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg></div><div class="cs-name">Episode: Dr. Dale G. Caldwell</div></div>
   <div class="cs-row"><div class="cs-dot" style="background:#8B5CF6"><svg width="15" height="15" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg></div><div class="cs-name">Episode: Dr. David M. Stout</div></div>
@@ -1227,14 +1124,9 @@ body {
   <div class="panel-links" id="panel-links" style="display:none"></div>
 </div>
 
-<!-- Left all-pillars panel -->
-<div id="all-panel">
-  <button class="all-close" id="all-close-btn">&#x2715;</button>
-  <div class="all-heading">&#127909; All Episodes</div>
-  <div id="all-content"></div>
-</div>
+<button id="panel-reveal-tab" title="Show panel" onclick="toggleLeftPanel()">&#8250;</button>
 
-<div id="bottom-right-bar"><div id="header"><h1>Stone Synergy Soup</h1></div><button id="btn-all">&#9776; View All Episodes</button></div>
+<div id="bottom-right-bar"><div id="header"><h1>Stone Synergy Soup</h1></div></div>
 
 <!-- â”€â”€ Pot modal â”€â”€ -->
 <div id="pot-modal">
@@ -1540,66 +1432,6 @@ document.getElementById('center').addEventListener('click', function() {
   openPotModal();
 });
 
-var allOpen = false;
-
-function buildAllContent() {
-  var wrap = document.getElementById('all-content');
-  if (wrap.innerHTML) return;
-  wrap.innerHTML = PILLARS.map(function(p) {
-    var introHtml = p.intro
-      ? '<a class="panel-intro-header" href="' + p.intro.headerUrl + '" target="_blank" rel="noopener">&#8599; ' + p.intro.headerText + '</a>' +
-        '<p class="panel-intro-tagline">' + p.intro.tagline + '</p>' +
-        '<p class="panel-intro-desc" style="margin-bottom:10px">' + p.intro.description + '</p>'
-      : '';
-    var bulletHtml = p.bullets.map(function(b) {
-      return '<li>' + b + '</li>';
-    }).join('');
-    var linkHtml = p.links.map(function(l) {
-      return '<a class="all-link" href="' + l.url + '" target="_blank" rel="noopener">&#8599; ' + l.text + '</a>';
-    }).join('');
-    return (
-      '<div class="all-item">' +
-        '<div class="all-item-header" data-open="' + p.id + '">' +
-          '<span class="all-item-icon">' + p.icon + '</span>' +
-          '<span class="all-item-title" style="color:' + p.color + '">' + (p.name || p.label) + '</span>' +
-        '</div>' +
-        introHtml +
-        '<ul class="all-bullets">' + bulletHtml + '</ul>' +
-        linkHtml +
-      '</div>'
-    );
-  }).join('');
-
-  (function() {
-    var s = document.createElement('style');
-    PILLARS.forEach(function(p, i) {
-      s.textContent += '#all-content .all-item:nth-child(' + (i+1) + ') .all-bullets li::before { color: ' + p.color + '; }\n';
-    });
-    document.head.appendChild(s);
-  })();
-
-  document.querySelectorAll('[data-open]').forEach(function(el) {
-    el.addEventListener('click', function() {
-      var id = el.dataset.open;
-      var p = PILLARS.find(function(x) { return x.id === id; });
-      if (p) openPanel(p);
-    });
-  });
-}
-
-function toggleAll() {
-  allOpen = !allOpen;
-  var btn = document.getElementById('btn-all');
-  var panel = document.getElementById('all-panel');
-  if (allOpen) {
-    buildAllContent();
-    panel.classList.add('open');
-    btn.style.visibility = 'hidden';
-  } else {
-    panel.classList.remove('open');
-    btn.style.visibility = 'visible';
-  }
-}
 
 (function createStars() {
   for (var i = 0; i < 90; i++) {
@@ -1612,18 +1444,33 @@ function toggleAll() {
 })();
 
 document.getElementById('panel-close-btn').addEventListener('click', closePanel);
-document.getElementById('all-close-btn').addEventListener('click', toggleAll);
-document.getElementById('btn-all').addEventListener('click', toggleAll);
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    if (document.getElementById('panel').classList.contains('open')) {
-      closePanel();
-    } else if (allOpen) {
-      toggleAll();
-    }
+    if (document.getElementById('panel').classList.contains('open')) closePanel();
   }
 });
+
+(function() {
+  var lp = document.getElementById('left-panel');
+  var tab = document.getElementById('panel-reveal-tab');
+  var hidden = localStorage.getItem('sss_panel_hidden') === '1';
+  function applyState() {
+    if (hidden) {
+      lp.classList.add('panel-hidden');
+      tab.style.display = 'block';
+    } else {
+      lp.classList.remove('panel-hidden');
+      tab.style.display = 'none';
+    }
+  }
+  window.toggleLeftPanel = function() {
+    hidden = !hidden;
+    localStorage.setItem('sss_panel_hidden', hidden ? '1' : '0');
+    applyState();
+  };
+  applyState();
+})();
 
 // â”€â”€ Ingredients â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 var ING_KEY = 'sss_ingredients_v1';
