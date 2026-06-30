@@ -247,6 +247,7 @@ body {
 }
 
 .panel-big-icon { font-size: 44px; line-height: 1; }
+.panel-big-icon svg { width: 48px; height: 48px; }
 
 .panel-title-wrap { flex: 1; }
 .panel-title {
@@ -951,11 +952,11 @@ body {
 <!-- Left all-pillars panel -->
 <div id="all-panel">
   <button class="all-close" id="all-close-btn">&#x2715;</button>
-  <div class="all-heading">&#x1F372; All Pillars</div>
+  <div class="all-heading">&#127909; All Episodes</div>
   <div id="all-content"></div>
 </div>
 
-<button id="btn-all">&#9776; View All Pillars</button>
+<button id="btn-all">&#9776; View All Episodes</button>
 
 <!-- â”€â”€ Pot modal â”€â”€ -->
 <div id="pot-modal">
@@ -989,7 +990,58 @@ body {
 </div>
 
 <script>
-var PILLARS = [];
+var PILLARS = [
+  {
+    id: 'ep1',
+    label: 'Episode 1',
+    icon: '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg>',
+    color: '#3B82F6',
+    glowColor: 'rgba(59,130,246,0.65)',
+    angle: -90,
+    bullets: [],
+    links: []
+  },
+  {
+    id: 'ep2',
+    label: 'Episode 2',
+    icon: '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="17" cy="17" r="13" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.08)"/><circle cx="17" cy="17" r="4" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="17" cy="7" r="2.5" fill="rgba(255,255,255,0.6)"/><circle cx="24.7" cy="12" r="2.5" fill="rgba(255,255,255,0.6)"/><circle cx="24.7" cy="22" r="2.5" fill="rgba(255,255,255,0.6)"/><circle cx="17" cy="27" r="2.5" fill="rgba(255,255,255,0.6)"/><circle cx="9.3" cy="22" r="2.5" fill="rgba(255,255,255,0.6)"/><circle cx="9.3" cy="12" r="2.5" fill="rgba(255,255,255,0.6)"/></svg>',
+    color: '#8B5CF6',
+    glowColor: 'rgba(139,92,246,0.65)',
+    angle: -18,
+    bullets: [],
+    links: []
+  },
+  {
+    id: 'ep3',
+    label: 'Episode 3',
+    icon: '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="11" width="20" height="13" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><path d="M22 15 L32 10 L32 24 L22 19 Z" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.15)" stroke-linejoin="round"/><circle cx="11" cy="17.5" r="3" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.15)"/></svg>',
+    color: '#10B981',
+    glowColor: 'rgba(16,185,129,0.65)',
+    angle: 54,
+    bullets: [],
+    links: []
+  },
+  {
+    id: 'ep4',
+    label: 'Episode 4',
+    icon: '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="7" width="26" height="20" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.08)"/><rect x="4" y="7" width="5" height="20" fill="rgba(255,255,255,0.22)" rx="1"/><rect x="25" y="7" width="5" height="20" fill="rgba(255,255,255,0.22)" rx="1"/><rect x="5.5" y="10" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="5.5" y="15.5" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="5.5" y="21" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="26.5" y="10" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="26.5" y="15.5" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="26.5" y="21" width="2" height="3.5" rx="0.5" fill="white" opacity="0.75"/><rect x="10" y="10" width="14" height="14" rx="1.5" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/></svg>',
+    color: '#F59E0B',
+    glowColor: 'rgba(245,158,11,0.65)',
+    angle: 126,
+    bullets: [],
+    links: []
+  },
+  {
+    id: 'ep5',
+    label: 'Episode 5',
+    icon: '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="3,13 15,8 15,26 3,21" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.14)" stroke-linejoin="round"/><rect x="15" y="13" width="6" height="8" stroke="white" stroke-width="1.5" fill="rgba(255,255,255,0.18)"/><line x1="21" y1="10" x2="31" y2="6" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="17" x2="31" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="24" x2="31" y2="28" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>',
+    color: '#EF4444',
+    glowColor: 'rgba(239,68,68,0.65)',
+    angle: 198,
+    bullets: [],
+    links: []
+  }
+];
 
 var CX = 450, CY = 405, ORBIT = 295, CTR_R = 104, PLR_R = 72;
 
@@ -1086,7 +1138,7 @@ function openPanel(p) {
   document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
   document.getElementById('pillar-' + p.id).classList.add('active');
 
-  document.getElementById('panel-icon').textContent = p.icon;
+  document.getElementById('panel-icon').innerHTML = p.icon;
   document.getElementById('panel-title').textContent = p.label;
   document.getElementById('panel-bar').style.background = p.color;
 
@@ -1265,7 +1317,7 @@ function renderMapDots() {
 function openIngredientPanel(ing, idx) {
   closePotModal();
   document.querySelectorAll('.pillar').forEach(function(el){ el.classList.remove('active'); });
-  document.getElementById('panel-icon').textContent = 'ðŸ¥„';
+  document.getElementById('panel-icon').innerHTML = 'ðŸ¥„';
   document.getElementById('panel-title').textContent = 'Ingredient #' + (idx + 1);
   document.getElementById('panel-bar').style.background = ing.color;
   document.getElementById('panel-list').innerHTML =
@@ -1468,5 +1520,6 @@ renderPillars();
 </script>
 </body>
 </html>
+
 
 
