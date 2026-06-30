@@ -1616,10 +1616,6 @@ document.getElementById('pot-save-btn').addEventListener('click', function() {
 document.getElementById('pot-text-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) commitIngredient(this.value);
 });
-document.getElementById('export-btn').addEventListener('click', exportIngredients);
-document.getElementById('import-input').addEventListener('change', function() {
-  if (this.files[0]) { importIngredients(this.files[0]); this.value = ''; }
-});
 
 // â”€â”€ Story modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('header').querySelector('h1').addEventListener('click', function() {
@@ -1641,6 +1637,7 @@ renderPillars();
 </script>
 </body>
 </html>
+
 
 
 
