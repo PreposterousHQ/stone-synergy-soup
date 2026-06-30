@@ -361,7 +361,8 @@ body {
 .panel-also-in span { color: rgba(255,255,255,0.65); }
 .panel-admin-section { margin: 14px 22px 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; gap: 8px; }
 .panel-holon-row { display: flex; gap: 8px; align-items: center; }
-.panel-holon-row select { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; color: #fff; font-size: 11px; padding: 6px 8px; font-family: inherit; outline: none; cursor: pointer; }
+.panel-holon-row select { flex: 1; background: #12122a; border: 1px solid rgba(255,255,255,0.22); border-radius: 6px; color: #fff; font-size: 11px; padding: 6px 8px; font-family: inherit; outline: none; cursor: pointer; }
+.panel-holon-row select option { background: #12122a; color: #fff; }
 .panel-holon-row button { padding: 6px 14px; border-radius: 14px; border: 1px solid rgba(212,160,68,0.4); background: rgba(212,160,68,0.1); color: rgba(212,160,68,0.9); font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .panel-remove-btn { padding: 6px 14px; background: none; border: 1px solid rgba(255,80,80,0.3); border-radius: 14px; color: rgba(255,100,100,0.7); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: inherit; text-align: center; }
 .panel-link-inline:hover {
@@ -1912,6 +1913,21 @@ function holonDisplayName(id) {
   return found ? found.title : id;
 }
 
+function getAllHolonOptions() {
+  var opts = PILLARS.map(function(p) { return { id: p.id, name: p.name }; });
+  var seen = {};
+  PILLARS.forEach(function(p) { seen[p.id] = true; });
+  Object.keys(childData).forEach(function(pid) {
+    childData[pid].forEach(function(c) {
+      if (!c.refId && c.title && c.title !== 'Theme' && !seen[c.id]) {
+        opts.push({ id: c.id, name: c.title });
+        seen[c.id] = true;
+      }
+    });
+  });
+  return opts;
+}
+
 function linkNodeToHolon(child, targetPid) {
   var resolved = resolveNode(child);
   var sourceId = resolved.id;
@@ -2079,9 +2095,9 @@ function showChildPanel(frame, child) {
     holonRow.className = 'panel-holon-row';
     var sel = document.createElement('select');
     sel.id = 'panel-holon-select';
-    PILLARS.forEach(function(p) {
+    getAllHolonOptions().forEach(function(h) {
       var opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = p.name;
+      opt.value = h.id; opt.textContent = h.name;
       sel.appendChild(opt);
     });
     var addBtn = document.createElement('button');
