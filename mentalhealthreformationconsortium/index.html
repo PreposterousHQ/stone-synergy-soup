@@ -213,7 +213,7 @@ body {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 22px;
   padding: 30px;
-  z-index: 200;
+  z-index: 500;
   overflow-y: auto;
   transition: right 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: -10px 0 60px rgba(0,0,0,0.7);
@@ -377,11 +377,11 @@ body {
 .panel-holon-row button { padding: 6px 14px; border-radius: 14px; border: 1px solid rgba(212,160,68,0.4); background: rgba(212,160,68,0.1); color: rgba(212,160,68,0.9); font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .panel-remove-btn { padding: 6px 14px; background: none; border: 1px solid rgba(255,80,80,0.3); border-radius: 14px; color: rgba(255,100,100,0.7); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: inherit; text-align: center; }
 /* === VIEW TRAY === */
-#view-tray { position: fixed; bottom: 28px; right: 28px; z-index: 400; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-.view-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(8,8,24,0.88); border: 1.5px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.55); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; backdrop-filter: blur(8px); padding: 0; font-family: inherit; }
-.view-btn:hover { border-color: rgba(212,160,68,0.6); color: rgba(212,160,68,0.9); transform: scale(1.1); }
-.view-btn.active { border-color: rgba(212,160,68,0.8); color: rgba(212,160,68,1); background: rgba(212,160,68,0.12); box-shadow: 0 0 14px rgba(212,160,68,0.3); }
-#view-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.3); text-align: center; font-family: 'Segoe UI',sans-serif; pointer-events: none; }
+#view-tray { position: fixed; bottom: 20px; right: 20px; z-index: 450; display: flex; flex-direction: row; gap: 5px; align-items: center; background: rgba(6,6,18,0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 32px; padding: 5px 8px; }
+.view-btn { width: 36px; height: 36px; border-radius: 50%; background: none; border: 1.5px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.5); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; padding: 0; font-family: inherit; flex-shrink: 0; }
+.view-btn:hover { border-color: rgba(212,160,68,0.6); color: rgba(212,160,68,0.9); transform: scale(1.08); }
+.view-btn.active { border-color: rgba(212,160,68,0.85); color: rgba(212,160,68,1); background: rgba(212,160,68,0.13); box-shadow: 0 0 12px rgba(212,160,68,0.28); }
+#view-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.28); text-align: center; font-family: 'Segoe UI',sans-serif; pointer-events: none; padding: 0 4px; white-space: nowrap; }
 #viz-canvas { position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: none; z-index: 8; }
 .panel-link-inline:hover {
   color: rgba(180,210,255,1);
@@ -2572,6 +2572,8 @@ function vizInit() {
 }
 
 function setVizView(v) {
+  if (!VIZ_C) { vizInit(); }
+  if (!VIZ_C) return;
   if (vizRAF) { cancelAnimationFrame(vizRAF); vizRAF = null; }
   VIZ_C.onclick = null; VIZ_C.onmousedown = null; VIZ_C.onmousemove = null; VIZ_C.onmouseup = null;
   vizView = v;
@@ -3080,8 +3082,7 @@ function startDepth() {
   drawDepth();
 }
 
-vizInit();
-setVizView('orbit');
+window.addEventListener('load', function() { vizInit(); });
 </script>
 <canvas id="viz-canvas"></canvas>
 <div id="view-tray">
