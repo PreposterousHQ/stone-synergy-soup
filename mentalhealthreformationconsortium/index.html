@@ -1807,7 +1807,6 @@ document.addEventListener('keydown', function(e) {
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 drawLines();
 renderPillars();
-renderPillarRings();
 // Calling sheet smooth scroll
 (function() {
   var inner = document.querySelector('.cs-rows-inner');
@@ -1912,6 +1911,7 @@ function saveChildren() {
 }
 loadChildren();
 loadResonances();
+renderPillarRings();
 
 var childDataHistory = [];
 var MAX_HISTORY = 50;
