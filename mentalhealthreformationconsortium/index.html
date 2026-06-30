@@ -943,18 +943,19 @@ body {
 }
 100% { transform: translateY(-50%); }
 }
-/* ── Holonic drill-down ── */
-#back-btn {
-  position: fixed; top: 20px; right: 22px;
-  display: none; align-items: center; gap: 8px;
-  padding: 10px 22px;
-  background: rgba(14,14,30,0.9); border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 30px; color: rgba(255,255,255,0.85);
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  cursor: pointer; z-index: 300; backdrop-filter: blur(8px); transition: all 0.2s;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+#calling-sheet {
+  cursor: default;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
-#back-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+#calling-sheet.drill-back {
+  cursor: pointer;
+  border-color: rgba(212,160,68,0.9);
+  box-shadow: 0 0 18px rgba(212,160,68,0.25);
+}
+#calling-sheet.drill-back .cs-title {
+  color: #D4A044;
+}
+/* ── Holonic drill-down ── */
 #add-child-btn {
   position: fixed; bottom: 76px; right: 22px;
   display: none; align-items: center; gap: 6px;
@@ -1816,8 +1817,8 @@ function drillInto(p) {
   center.querySelector('.center-bg').innerHTML =
     '<div class="drill-center-icon" style="filter:drop-shadow(0 0 16px '+p.glowColor+')">'+p.icon+'</div>'+
     '<div class="drill-center-name" style="color:'+p.color+'">'+p.name+'</div>';
-  document.getElementById('back-btn').style.display = 'flex';
   if (ADMIN_MODE) document.getElementById('add-child-btn').style.display = 'flex';
+  document.getElementById('calling-sheet').classList.add('drill-back');
   closePanel();
   renderChildMap(p);
 }
@@ -1835,9 +1836,9 @@ function drillOut() {
     '<div class="steam-wrap"><div class="steam-wisp"></div><div class="steam-wisp"></div><div class="steam-wisp"></div></div>'+
     '<div class="center-hint-bar">Click to add ingredient</div>';
   renderMapDots();
-  document.getElementById('back-btn').style.display = 'none';
   document.getElementById('add-child-btn').style.display = 'none';
   closePanel();
+  document.getElementById('calling-sheet').classList.remove('drill-back');
   currentPillar = null;
 }
 
@@ -1979,8 +1980,25 @@ document.addEventListener('keydown', function(e) {
     document.getElementById('child-modal').classList.remove('open');
   }
 });
+
+// Calling sheet = back navigation
+document.getElementById('calling-sheet').addEventListener('click', function(e) {
+  if (e.target.closest('.cs-info-btn')) return;
+  if (currentPillar) drillOut();
+});
+
+// Calling Sheet info modal
+document.getElementById('cs-info-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('cs-modal').classList.add('open');
+});
+document.getElementById('cs-modal-close').addEventListener('click', function() {
+  document.getElementById('cs-modal').classList.remove('open');
+});
+document.getElementById('cs-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
 </script>
-<button id="back-btn" onclick="drillOut()">&#8592; Back</button>
 <button id="add-child-btn" onclick="openAddChildModal()">&#43; Add Theme</button>
 <div id="child-modal">
   <div class="child-modal-box">
@@ -2004,6 +2022,7 @@ document.addEventListener('keydown', function(e) {
   </div>
 </div></body>
 </html>
+
 
 
 
