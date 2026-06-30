@@ -2151,7 +2151,20 @@ function doPanelLinkHolon() {
 }
 
 function doPanelRemove() {
-  if (!_panelFrame || !_panelChild) return;
+  if (!ADMIN_MODE || !_panelFrame || !_panelChild) return;
+  var resolved = resolveNode(_panelChild);
+  var isLink = !!_panelChild.refId;
+  var locations = findNodeLocations(resolved.id);
+  var hasOtherLocs = locations.length > 1;
+  var msg;
+  if (isLink) {
+    msg = 'Remove the link to "' + resolved.title + '" from this holon?\n\nThe original node and any other linked copies are unaffected.';
+  } else if (hasOtherLocs) {
+    msg = 'Remove "' + resolved.title + '" from this holon?\n\nLinked copies in other holons will remain intact.';
+  } else {
+    msg = 'Permanently delete "' + resolved.title + '"?\n\nThis node has no linked copies — it will be gone for good.';
+  }
+  if (!window.confirm(msg)) return;
   removeNodeFromParent(_panelFrame.id, _panelChild);
   closePanel();
   var cd = currentDrill(); if (cd) renderChildMap(cd);
