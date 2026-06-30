@@ -943,6 +943,87 @@ body {
 }
 100% { transform: translateY(-50%); }
 }
+/* ── Holonic drill-down ── */
+#back-btn {
+  position: fixed; top: 20px; right: 22px;
+  display: none; align-items: center; gap: 8px;
+  padding: 10px 22px;
+  background: rgba(14,14,30,0.9); border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 30px; color: rgba(255,255,255,0.85);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; z-index: 300; backdrop-filter: blur(8px); transition: all 0.2s;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+#back-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+#add-child-btn {
+  position: fixed; bottom: 76px; right: 22px;
+  display: none; align-items: center; gap: 6px;
+  padding: 10px 22px;
+  background: rgba(14,14,30,0.9); border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 30px; color: rgba(255,255,255,0.85);
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; z-index: 300; backdrop-filter: blur(8px); transition: all 0.2s;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+#add-child-btn:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+.c-node {
+  position: absolute; width: 120px; height: 120px; border-radius: 50%;
+  transform: translate(-50%, -50%); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid rgba(255,255,255,0.25);
+  transition: transform 0.2s, box-shadow 0.2s; z-index: 10;
+}
+.c-node:hover { transform: translate(-50%,-50%) scale(1.08); }
+.c-label {
+  color: #fff; font-size: 10px; font-weight: 700; text-align: center;
+  line-height: 1.35; padding: 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+#center.drill-mode .center-bg {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important; gap: 8px !important;
+  background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.75) 100%) !important;
+}
+.drill-center-icon { display: flex; align-items: center; justify-content: center; }
+.drill-center-icon svg { width: 44px; height: 44px; }
+.drill-center-name {
+  font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  text-align: center; padding: 5px 14px; line-height: 1.3; color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,1), 0 0 24px rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.55); border-radius: 20px; display: inline-block;
+}
+#child-modal {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+}
+#child-modal.open { display: flex; }
+.child-modal-box {
+  background: rgba(8,10,28,0.98); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 12px; padding: 26px 26px 20px; width: 340px;
+  display: flex; flex-direction: column; gap: 11px;
+}
+.child-modal-heading {
+  color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px;
+}
+.child-modal-box input, .child-modal-box textarea {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px; color: #fff; font-size: 13px; padding: 10px 12px;
+  width: 100%; box-sizing: border-box; font-family: inherit; outline: none; transition: border-color 0.2s;
+}
+.child-modal-box textarea { min-height: 76px; resize: vertical; }
+.child-modal-box input:focus, .child-modal-box textarea:focus { border-color: rgba(255,255,255,0.38); }
+.child-modal-btns { display: flex; gap: 9px; justify-content: flex-end; margin-top: 2px; }
+.child-modal-btns button {
+  padding: 9px 20px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.75); transition: all 0.2s; font-family: inherit;
+}
+.child-modal-btns button:hover { background: rgba(255,255,255,0.14); color: #fff; }
+#child-modal-save {
+  background: linear-gradient(135deg,#6b2e0a,#D4A044) !important;
+  border-color: #D4A044 !important; color: #fff !important;
+}
 </style>
 </head>
 <body>
@@ -1706,6 +1787,12 @@ function drillOut() {
 }
 
 function renderChildMap(p) {
+  if (!childData[p.id] || childData[p.id].length === 0) {
+    childData[p.id] = [1,2,3,4,5].map(function(n) {
+      return { id: "cn_d"+n+"_"+p.id, title: "Node "+n, body: "", link: "" };
+    });
+    saveChildren();
+  }
   document.querySelectorAll('.c-node, #child-empty-hint').forEach(function(n) { n.remove(); });
   var children = childData[p.id] || [];
   var app = document.getElementById('app');
@@ -1838,8 +1925,22 @@ document.addEventListener('keydown', function(e) {
   }
 });
 </script>
-</body>
+<button id="back-btn" onclick="drillOut()">&#8592; Back</button>
+<button id="add-child-btn" onclick="openAddChildModal()">&#43; Add Node</button>
+<div id="child-modal">
+  <div class="child-modal-box">
+    <div class="child-modal-heading" id="child-modal-heading">Add Node</div>
+    <input id="child-form-title" type="text" placeholder="Title *" autocomplete="off">
+    <textarea id="child-form-body" placeholder="Body text (optional)"></textarea>
+    <input id="child-form-link" type="url" placeholder="https://... (optional)" autocomplete="off">
+    <div class="child-modal-btns">
+      <button id="child-modal-cancel">Cancel</button>
+      <button id="child-modal-save">Save</button>
+    </div>
+  </div>
+</div></body>
 </html>
+
 
 
 
