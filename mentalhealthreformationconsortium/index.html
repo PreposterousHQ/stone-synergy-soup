@@ -36,7 +36,7 @@ body {
   height: 900px;
   flex-shrink: 0;
   transform: scale(0.8);
-  margin-top: -95px;
+  margin: -95px auto 0;
 }
 
 #svg-lines {
@@ -941,8 +941,6 @@ body {
 .cs-rows-inner {
   will-change: transform;
 }
-100% { transform: translateY(-50%); }
-}
 #calling-sheet {
   cursor: default;
   transition: border-color 0.25s, box-shadow 0.25s;
@@ -1806,6 +1804,7 @@ function drillInto(p) {
     '<div class="drill-center-icon" style="filter:drop-shadow(0 0 16px '+p.glowColor+')">'+p.icon+'</div>'+
     '<div class="drill-center-name" style="color:'+p.color+'">'+p.name+'</div>';
   document.getElementById('calling-sheet').classList.add('drill-back');
+  document.getElementById('back-btn').style.display = 'block';
   if (ADMIN_MODE) {
     var ab = document.createElement('button');
     ab.id = 'add-child-btn'; ab.textContent = '+ Add Theme';
@@ -1831,6 +1830,7 @@ function drillOut() {
     '<div class="center-hint-bar">Click to add ingredient</div>';
   renderMapDots();
   var ab = document.getElementById('add-child-btn'); if (ab) ab.remove();
+  document.getElementById('back-btn').style.display = 'none';
   closePanel();
   document.getElementById('calling-sheet').classList.remove('drill-back');
   currentPillar = null;
@@ -1946,33 +1946,33 @@ function openChildModal(p, child) {
   setTimeout(function(){ document.getElementById('child-form-title').focus(); }, 50);
 }
 
-// Modal buttons via delegation (elements live after </script>)
-document.addEventListener('click', function(e) {
-  if (e.target.id === 'child-modal-cancel') {
-    document.getElementById('child-modal').classList.remove('open');
+function saveChildModal() {
+  if (!_cmp) return;
+  var title = document.getElementById('child-form-title').value.trim();
+  if (!title) { document.getElementById('child-form-title').focus(); return; }
+  var pid = _cmp.id;
+  var body = document.getElementById('child-form-body').value.trim();
+  var link = document.getElementById('child-form-link').value.trim();
+  if (!childData[pid]) childData[pid] = [];
+  if (_cme) {
+    var idx = childData[pid].findIndex(function(c) { return c.id === _cme.id; });
+    if (idx > -1) childData[pid][idx] = { id: _cme.id, title: title, body: body, link: link };
+  } else {
+    childData[pid].push({ id: 'cn_'+Date.now(), title: title, body: body, link: link });
   }
-  if (e.target.id === 'child-modal-save') {
-    if (!_cmp) return;
-    var title = document.getElementById('child-form-title').value.trim();
-    if (!title) { document.getElementById('child-form-title').focus(); return; }
-    var pid = _cmp.id;
-    var body = document.getElementById('child-form-body').value.trim();
-    var link = document.getElementById('child-form-link').value.trim();
-    if (!childData[pid]) childData[pid] = [];
-    if (_cme) {
-      var idx = childData[pid].findIndex(function(c) { return c.id === _cme.id; });
-      if (idx > -1) childData[pid][idx] = { id: _cme.id, title: title, body: body, link: link };
-    } else {
-      childData[pid].push({ id: 'cn_'+Date.now(), title: title, body: body, link: link });
-    }
-    saveChildren();
-    document.getElementById('child-modal').classList.remove('open');
-    if (currentPillar && currentPillar.id === pid) renderChildMap(currentPillar);
-  }
-  if (e.target.id === 'cs-modal-close' || e.target.id === 'cs-modal') {
-    document.getElementById('cs-modal').classList.remove('open');
-  }
-});
+  saveChildren();
+  document.getElementById('child-modal').classList.remove('open');
+  if (currentPillar && currentPillar.id === pid) renderChildMap(currentPillar);
+}
+function cancelChildModal() {
+  document.getElementById('child-modal').classList.remove('open');
+}
+function openCSModal() {
+  document.getElementById('cs-modal').classList.add('open');
+}
+function closeCSModal() {
+  document.getElementById('cs-modal').classList.remove('open');
+}
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && document.getElementById('child-modal').classList.contains('open')) {
@@ -1980,20 +1980,13 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// Click anywhere outside nodes/center in drill mode = back
-document.getElementById('app').addEventListener('click', function(e) {
-  if (!currentPillar) return;
-  if (e.target.closest('.c-node') || e.target.closest('#center') || e.target.closest('#add-child-btn')) return;
-  drillOut();
-});
-
 // Calling Sheet info modal
 document.getElementById('cs-info-btn').addEventListener('click', function(e) {
   e.stopPropagation();
-  document.getElementById('cs-modal').classList.add('open');
+  openCSModal();
 });
-// cs-modal close handled by delegation above
 </script>
+<button id="back-btn" onclick="drillOut()" style="display:none;position:fixed;top:22px;right:22px;z-index:300;background:rgba(10,10,28,0.88);border:1px solid rgba(255,255,255,0.22);border-radius:22px;color:rgba(255,255,255,0.8);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;padding:9px 20px;font-family:inherit;backdrop-filter:blur(8px);">&#8592; Back</button>
 <div id="child-modal">
   <div class="child-modal-box">
     <div class="child-modal-heading" id="child-modal-heading">Add Theme</div>
@@ -2001,13 +1994,13 @@ document.getElementById('cs-info-btn').addEventListener('click', function(e) {
     <textarea id="child-form-body" placeholder="Body text (optional)"></textarea>
     <input id="child-form-link" type="url" placeholder="https://... (optional)" autocomplete="off">
     <div class="child-modal-btns">
-      <button id="child-modal-cancel">Cancel</button>
-      <button id="child-modal-save">Save</button>
+      <button id="child-modal-cancel" onclick="cancelChildModal()">Cancel</button>
+      <button id="child-modal-save" onclick="saveChildModal()">Save</button>
     </div>
   </div>
-</div><div id="cs-modal">
+</div><div id="cs-modal" onclick="if(event.target===this)closeCSModal()">
   <div id="cs-modal-dialog">
-    <button id="cs-modal-close">&#x2715;</button>
+    <button id="cs-modal-close" onclick="closeCSModal()">&#x2715;</button>
     <h2>The Calling Sheet</h2>
     <p>On a film set, the document that runs the day is the call sheet — a logistical instrument that tells each person when to arrive, where to stand, and what&#8217;s required of them. It is the paperwork of a zero-sum world: time is scarce, attention is rationed, and every name is reduced to a function and a call time. It calls people to work.</p>
     <p>We keep the discipline a call sheet provides — the gathering still has a place and an hour — but we refuse its register, because what we are making is not extracted from people; it is offered by them. So we call ours a Calling Sheet.</p>
