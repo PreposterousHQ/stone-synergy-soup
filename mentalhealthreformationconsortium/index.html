@@ -1,0 +1,1568 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mind Map NJ AWARE Interagency Strategic Vision</title>
+<meta name="description" content="Interactive map of the Stone Synergy Soup NJ Consortium pillars: Faith, Mental Health, Workplace, Campus, Film Industry, and A.W.A.R.E.">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Georgia', serif;
+  background: radial-gradient(ellipse at 30% 20%, #1a0e2e 0%, #0d0d1a 55%, #050508 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.star {
+  position: fixed;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+#app {
+  position: relative;
+  width: 900px;
+  height: 900px;
+  flex-shrink: 0;
+  transform: scale(0.8);
+  margin-top: -95px;
+}
+
+#svg-lines {
+  position: absolute;
+  top: 0; left: 0;
+  width: 900px; height: 900px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* â”€â”€ Center node â”€â”€ */
+#center {
+  position: absolute;
+  top: 405px; left: 450px;
+  transform: translate(-50%, -50%);
+  width: 208px; height: 208px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.center-bg {
+  width: 208px; height: 208px;
+  border-radius: 50%;
+  background: url('../images/stone-soup-nj.png') center 38%/cover no-repeat;
+  border: 4px solid #D4A044;
+  box-shadow:
+    0 0 0 10px rgba(212,160,68,0.08),
+    0 0 40px rgba(212,160,68,0.7),
+    0 0 90px rgba(212,160,68,0.3);
+  animation: centerGlow 3s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+#center:hover .center-bg { transform: scale(1.05); }
+
+.center-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.08);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes centerGlow {
+  0%, 100% { box-shadow: 0 0 0 10px rgba(212,160,68,0.08), 0 0 40px rgba(212,160,68,0.7), 0 0 90px rgba(212,160,68,0.3); }
+  50%       { box-shadow: 0 0 0 14px rgba(212,160,68,0.12), 0 0 60px rgba(212,160,68,1.0), 0 0 130px rgba(212,160,68,0.5); }
+}
+
+.steam-wrap {
+  position: absolute;
+  bottom: 108%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.steam-wisp {
+  border-radius: 4px;
+  background: rgba(210,210,255,0.45);
+  filter: blur(3px);
+  animation: steamUp 2.8s ease-out infinite;
+}
+.steam-wisp:nth-child(1) { width: 7px; height: 34px; animation-delay: 0s; }
+.steam-wisp:nth-child(2) { width: 5px; height: 22px; animation-delay: 0.55s; }
+.steam-wisp:nth-child(3) { width: 6px; height: 28px; animation-delay: 1.1s; }
+
+@keyframes steamUp {
+  0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+  20%  { opacity: 0.75; }
+  100% { opacity: 0; transform: translateY(-60px) scaleX(2.8); }
+}
+
+.center-hint-bar {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.58);
+  color: rgba(255,255,255,0.65);
+  font-size: 7.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  z-index: 2;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* â”€â”€ Pillars â”€â”€ */
+.pillar {
+  position: absolute;
+  width: 143px; height: 143px;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  cursor: pointer;
+}
+
+.pillar-inner {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 14px;
+  border: 3px solid rgba(255,255,255,0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pillar-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0);
+  transition: background 0.3s;
+}
+
+.pillar:hover .pillar-inner,
+.pillar.active .pillar-inner {
+  transform: scale(1.1);
+  border-color: rgba(255,255,255,0.75);
+}
+
+.pillar:hover .pillar-inner::before,
+.pillar.active .pillar-inner::before {
+  background: rgba(255,255,255,0.07);
+}
+
+.pillar.active .pillar-inner {
+  transform: scale(1.13);
+}
+
+.p-icon {
+  font-size: 32px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+
+.p-label {
+  color: #fff;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.35;
+  margin-top: 6px;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.95);
+  position: relative;
+  z-index: 1;
+}
+
+/* â”€â”€ Detail panel (right) â”€â”€ */
+#panel {
+  position: fixed;
+  right: -440px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 410px;
+  max-height: 88vh;
+  background: rgba(6,6,18,0.97);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  padding: 30px;
+  z-index: 200;
+  overflow-y: auto;
+  transition: right 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -10px 0 60px rgba(0,0,0,0.7);
+}
+#panel.open { right: 22px; }
+
+.panel-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.panel-close:hover { background: rgba(255,255,255,0.22); }
+
+.panel-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.09);
+  margin-bottom: 20px;
+}
+
+.panel-big-icon { font-size: 44px; line-height: 1; }
+
+.panel-title-wrap { flex: 1; }
+.panel-title {
+  color: #fff;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 1.35;
+}
+.panel-bar {
+  height: 3px;
+  width: 48px;
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+.panel-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel-list li {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  color: rgba(255,255,255,0.82);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.p-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+.panel-links {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.links-heading {
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.panel-link {
+  color: rgba(140,180,255,0.85);
+  font-size: 12px;
+  text-decoration: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.panel-link:hover {
+  color: rgba(180,210,255,1);
+  text-decoration: underline;
+}
+
+.panel-intro {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.panel-intro-header {
+  color: rgba(140,180,255,0.85);
+  font-size: 12px;
+  text-decoration: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.panel-intro-header:hover {
+  color: rgba(180,210,255,1);
+  text-decoration: underline;
+}
+.panel-intro-tagline {
+  color: rgba(255,255,255,0.90);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 7px;
+  line-height: 1.4;
+}
+.panel-intro-desc {
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+}
+.panel-link-inline {
+  color: rgba(140,180,255,0.85);
+  text-decoration: none;
+}
+.panel-link-inline:hover {
+  color: rgba(180,210,255,1);
+  text-decoration: underline;
+}
+
+/* â”€â”€ All Pillars panel (left) â”€â”€ */
+#all-panel {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(100% + 22px));
+  width: 375px;
+  max-height: 90vh;
+  background: rgba(6,6,18,0.97);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 22px;
+  padding: 26px;
+  z-index: 200;
+  overflow-y: auto;
+  transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: -10px 0 60px rgba(0,0,0,0.7);
+}
+#all-panel.open {
+  transform: translateY(-50%) translateX(0);
+}
+
+.all-heading {
+  color: #D4A044;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.09);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.all-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.all-close:hover { background: rgba(255,255,255,0.22); }
+
+.all-item {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.all-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.all-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.all-item-header:hover { opacity: 0.8; }
+.all-item-icon { font-size: 22px; }
+.all-item-title {
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.35;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.all-bullets {
+  list-style: none;
+  padding-left: 32px;
+}
+.all-bullets li {
+  color: rgba(255,255,255,0.62);
+  font-size: 11px;
+  line-height: 1.65;
+  margin-bottom: 3px;
+  position: relative;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.all-bullets li::before {
+  content: 'â€¢';
+  position: absolute;
+  left: -14px;
+}
+.all-link {
+  display: block;
+  margin-top: 7px;
+  padding-left: 32px;
+  color: rgba(140,180,255,0.75);
+  font-size: 11px;
+  text-decoration: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.all-link:hover { color: rgba(180,210,255,1); text-decoration: underline; }
+
+/* â”€â”€ Bottom button â”€â”€ */
+#btn-all {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  transform: none;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #6b2e0a 0%, #c4882a 50%, #D4A044 100%);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 300;
+  box-shadow: 0 4px 28px rgba(212,160,68,0.5);
+  transition: all 0.3s;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+#btn-all:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 44px rgba(212,160,68,0.75);
+}
+
+/* â”€â”€ Header â”€â”€ */
+#header {
+  position: fixed;
+  top: 20px; left: 22px;
+  transform: none;
+  text-align: left;
+  z-index: 20;
+  pointer-events: none;
+}
+#header h1 {
+  font-size: 21px;
+  color: #D4A044;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 30px rgba(212,160,68,0.65);
+  pointer-events: all;
+  cursor: pointer;
+}
+#header h1:hover {
+  text-shadow: 0 0 40px rgba(212,160,68,1), 0 0 8px rgba(212,160,68,0.5);
+}
+#header p {
+  color: rgba(255,255,255,0.38);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 5px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 3px; }
+
+/* â”€â”€ Ingredient dots (main map, inside pot) â”€â”€ */
+.ing-dot {
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.65);
+  cursor: pointer;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px; font-weight: bold; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.ing-dot:hover {
+  transform: translate(-50%, -50%) scale(1.5);
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+  z-index: 6;
+}
+
+/* â”€â”€ Story modal â”€â”€ */
+#story-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+#story-modal.open { opacity: 1; pointer-events: all; }
+#story-modal-dialog {
+  background: rgba(6,6,18,0.98);
+  border: 1px solid rgba(212,160,68,0.25);
+  border-radius: 14px;
+  padding: 44px 48px 40px;
+  max-width: 560px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  animation: potModalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+#story-modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+#story-modal-close:hover { background: rgba(255,255,255,0.22); }
+#story-modal-title {
+  font-size: 22px;
+  color: #D4A044;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  font-family: inherit;
+}
+#story-modal-body p {
+  color: rgba(255,255,255,0.78);
+  font-size: 14px;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+#story-modal-body p:last-child { margin-bottom: 0; }
+#story-modal-closing {
+  color: rgba(212,160,68,0.85) !important;
+  font-style: italic;
+  border-top: 1px solid rgba(212,160,68,0.15);
+  padding-top: 16px;
+  margin-top: 4px;
+}
+
+/* â”€â”€ Pot modal â”€â”€ */
+#pot-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+#pot-modal.open { opacity: 1; pointer-events: all; }
+
+#pot-modal-dialog {
+  background: rgba(6,6,18,0.98);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  width: min(820px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  animation: potModalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes potModalIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+#pot-modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none; color: #fff;
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+#pot-modal-close:hover { background: rgba(255,255,255,0.22); }
+
+/* Modal left: pot visual */
+#pot-modal-left {
+  width: 295px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 38px 20px 30px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  gap: 12px;
+}
+#pot-modal-bowl {
+  width: 230px; height: 230px;
+  border-radius: 50%;
+  background: url('../images/stone-soup-nj.png') center 38%/cover no-repeat;
+  border: 3px solid #D4A044;
+  box-shadow: 0 0 30px rgba(212,160,68,0.45), 0 0 70px rgba(212,160,68,0.15);
+  position: relative;
+  flex-shrink: 0;
+}
+.ing-dot-modal {
+  position: absolute;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: bold; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  transform: translate(-50%, -50%);
+  transition: transform 0.18s, box-shadow 0.18s;
+  z-index: 2;
+}
+.ing-dot-modal:hover {
+  transform: translate(-50%, -50%) scale(1.25);
+  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  z-index: 3;
+}
+#pot-modal-bowl-hint {
+  color: rgba(255,255,255,0.28);
+  font-size: 10px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Modal right: ingredient list + controls */
+#pot-modal-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 24px;
+  overflow-y: auto;
+  min-width: 0;
+}
+#pot-modal-heading {
+  color: #D4A044;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin-bottom: 3px;
+}
+#pot-modal-subheading {
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin-bottom: 18px;
+  letter-spacing: 0.4px;
+}
+#pot-ing-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-y: auto;
+}
+.ing-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.ing-list-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); }
+.ing-list-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.ing-list-text {
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  line-height: 1.55;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.ing-empty {
+  color: rgba(255,255,255,0.22);
+  font-size: 12px;
+  font-style: italic;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  text-align: center;
+  padding: 24px 0;
+}
+#pot-add-btn {
+  align-self: flex-start;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, #3d1505, #8B4513);
+  color: #D4A044;
+  border: 1px solid rgba(212,160,68,0.4);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: all 0.2s;
+}
+#pot-add-btn:hover { background: linear-gradient(135deg, #5d2209, #a0521e); border-color: rgba(212,160,68,0.7); }
+#pot-add-form {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+#pot-add-form.visible { display: flex; }
+#pot-text-input {
+  width: 100%;
+  min-height: 80px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.55;
+}
+#pot-text-input:focus { border-color: rgba(212,160,68,0.5); }
+#pot-text-input::placeholder { color: rgba(255,255,255,0.22); }
+#pot-form-btns { display: flex; gap: 8px; align-items: center; }
+#pot-form-hint { color: rgba(255,255,255,0.25); font-size: 10px; font-family: 'Segoe UI', system-ui, sans-serif; }
+#pot-save-btn {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #D4A044, #c4882a);
+  color: #fff; border: none; border-radius: 16px;
+  font-size: 12px; font-weight: bold; cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+  transition: filter 0.2s;
+}
+#pot-save-btn:hover { filter: brightness(1.12); }
+#pot-cancel-btn {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.55);
+  border: none; border-radius: 16px;
+  font-size: 12px; cursor: pointer;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: background 0.2s;
+}
+#pot-cancel-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* â”€â”€ Ingredient list action buttons â”€â”€ */
+.ing-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ing-list-item:hover .ing-item-actions { opacity: 1; }
+.ing-action-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0; line-height: 1;
+}
+.ing-action-btn:hover { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+.ing-action-btn.del:hover { background: rgba(239,68,68,0.2); color: rgba(239,100,100,1); }
+
+/* â”€â”€ Export / Import â”€â”€ */
+#data-controls {
+  position: fixed;
+  bottom: 58px;
+  left: 22px;
+  display: flex;
+  gap: 6px;
+  z-index: 400;
+}
+.data-btn {
+  padding: 5px 11px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 14px;
+  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.data-btn:hover { border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.6); }
+#import-label input[type=file] { display: none; }
+
+/* â”€â”€ V2 Playground badge â”€â”€ */
+#v2-badge {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 400;
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  color: rgba(255, 120, 120, 0.9);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Stone Synergy Soup</h1>
+</div>
+
+<div id="app">
+  <svg id="svg-lines" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+  </svg>
+
+  <div id="center">
+    <div class="center-bg">
+      <div class="steam-wrap">
+        <div class="steam-wisp"></div>
+        <div class="steam-wisp"></div>
+        <div class="steam-wisp"></div>
+      </div>
+      <div class="center-hint-bar">Click to add ingredient</div>
+    </div>
+  </div>
+</div>
+
+<!-- Story modal -->
+<div id="story-modal">
+  <div id="story-modal-dialog">
+    <button id="story-modal-close">&#x2715;</button>
+    <h2 id="story-modal-title">Stone Soup</h2>
+    <div id="story-modal-body">
+      <p>There is an old story â€” told in many cultures, in many languages â€” about a traveler who arrives in a village carrying nothing but an empty pot and a single stone. The village is gripped by scarcity. Doors are shut. Larders are locked. No one has enough, and no one is willing to share.</p>
+      <p>The traveler sets the pot over a fire, fills it with water, and drops in the stone. "I am making stone soup," he says. "It is almost ready â€” but it would be even better with just a small carrot." Curious, a villager brings a carrot. Then another offers an onion. Someone else adds a handful of barley. A farmer contributes a bone. A child brings herbs from the garden.</p>
+      <p>By nightfall, the whole village is gathered around the fire, sharing a rich and nourishing feast â€” made from nothing but a stone and the willingness of each person to bring what they had.</p>
+      <p id="story-modal-closing">The stone was never the ingredient. The stone was the invitation. The soup was always already there â€” waiting in the hands of the community.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Right detail panel -->
+<div id="panel">
+  <button class="panel-close" id="panel-close-btn">&#x2715;</button>
+  <div class="panel-top">
+    <div class="panel-big-icon" id="panel-icon"></div>
+    <div class="panel-title-wrap">
+      <div class="panel-title" id="panel-title"></div>
+      <div class="panel-bar" id="panel-bar"></div>
+    </div>
+  </div>
+  <div id="panel-intro" style="display:none"></div>
+  <ul class="panel-list" id="panel-list"></ul>
+  <div class="panel-links" id="panel-links" style="display:none"></div>
+</div>
+
+<!-- Left all-pillars panel -->
+<div id="all-panel">
+  <button class="all-close" id="all-close-btn">&#x2715;</button>
+  <div class="all-heading">&#x1F372; All Pillars</div>
+  <div id="all-content"></div>
+</div>
+
+<button id="btn-all">&#9776; View All Pillars</button>
+
+<!-- â”€â”€ Pot modal â”€â”€ -->
+<div id="pot-modal">
+  <div id="pot-modal-dialog">
+    <button id="pot-modal-close">&#x2715;</button>
+    <div id="pot-modal-left">
+      <div id="pot-modal-bowl"></div>
+      <div id="pot-modal-bowl-hint">Click any ingredient to view &nbsp;Â·&nbsp; Click outside to close</div>
+    </div>
+    <div id="pot-modal-right">
+      <div id="pot-modal-heading">&#x1F372; Ingredients</div>
+      <div id="pot-modal-subheading">What goes into the soup?</div>
+      <div id="pot-ing-list"></div>
+      <button id="pot-add-btn">+ Add Ingredient</button>
+      <div id="pot-add-form">
+        <textarea id="pot-text-input" placeholder="Describe your ingredient â€” a person, an idea, a resource, a connection..."></textarea>
+        <div id="pot-form-btns">
+          <button id="pot-save-btn">Save</button>
+          <button id="pot-cancel-btn">Cancel</button>
+          <span id="pot-form-hint">or Ctrl+Enter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- â”€â”€ Export / Import â”€â”€ -->
+<div id="data-controls">
+  <button class="data-btn" id="export-btn">&#8595; Export</button>
+  <label class="data-btn" id="import-label">&#8593; Import<input type="file" id="import-input" accept=".json"></label>
+</div>
+
+<script>
+var PILLARS = [
+  {
+    id: 'aware',
+    label: 'NJ A.W.A.R.E. â†’ NJ Consortium',
+    icon: 'ðŸŽ¯',
+    color: '#3B82F6',
+    glowColor: 'rgba(59,130,246,0.65)',
+    angle: -90,
+    bullets: [
+      'Bridging NJ A.W.A.R.E. (Awareness, Wellness, Advocacy, Recovery & Education) into the broader NJ Consortium framework',
+      'Peer-led recovery ecosystem connecting individuals with lived experience to community care networks',
+      'Building a regional coalition that amplifies mental health awareness and advocacy across New Jersey',
+    ],
+    links: []
+  },
+  {
+    id: 'fac',
+    label: 'NJ Faith Action Center (FAC)',
+    icon: 'ðŸ•Šï¸',
+    color: '#8B5CF6',
+    glowColor: 'rgba(139,92,246,0.65)',
+    angle: -30,
+    intro: {
+      headerText: 'New Jersey Department of State â€” NJ Faith Action Center',
+      headerUrl: 'https://www.nj.gov/state/fac/index.shtml',
+      tagline: 'Strengthening Communities Through Faith in Action',
+      description: 'Connecting faith-based organizations with the resources, partnerships, and support needed to serve communities more effectively.'
+    },
+    bullets: [
+      'FAC Advisory Councils, Regional Faith Networks, FAC Academy, Dr. Semaj Y. Vanzant, Sr., Executive Director â€” <a class="panel-link-inline" href="https://www.nj.gov/state/fac/index.shtml" target="_blank" rel="noopener">NJ Faith Action Center</a>',
+      'Synergy with NJ A.W.A.R.E., We Are Monmouth &amp; NAMI FaithNet â€” Pathways to Hope. Together WE expand FAC impact on the spiritual side of mental health in NJ Communities.',
+      'Together WE connect chaplains &amp; clergy with first responders and behavioral health professionals to better serve the spiritual &amp; religious side of mental health in the community.',
+      'People helping people â€” <a class="panel-link-inline" href="https://www.youtube.com/watch?v=f7Stz-jbyMw" target="_blank" rel="noopener">Dr. Dale Caldwell NJ FAITH ACTION CENTER Ocean Grove, NJ 4/29/26</a>',
+    ],
+    links: []
+  },
+  {
+    id: 'mentalhealth',
+    label: 'NJ Mental Health',
+    icon: 'ðŸ§ ',
+    color: '#10B981',
+    glowColor: 'rgba(16,185,129,0.65)',
+    angle: 30,
+    bullets: [
+      'Engage FAC (Faith Action Center) in community mental health through the NJ AWARE Coalition &amp; interagency collaboration',
+      'Expand workforce development with PEER SUPPORT Services in NJ',
+      'Reduce costs &amp; improve outcomes with an interconnected Stone Synergy Soup Strategy on Mental Health Reformation in NJ',
+    ],
+    links: []
+  },
+  {
+    id: 'workplace',
+    label: 'Workplace Mental Health',
+    icon: 'ðŸ’¼',
+    color: '#F59E0B',
+    glowColor: 'rgba(245,158,11,0.65)',
+    angle: 90,
+    bullets: [
+      'Expand on the article: The Employee Mental Health Business Imperative (ROI-NJ Op-Ed)',
+      'Integrate latest research from NJBIZ, McKinsey, Mental Health America &amp; NAMI into NJBIA 2027 program with Dr. Caldwell as moderator.',
+      'Connect workplace wellness with FAC &amp; workforce development to include staff at hospitals, mental health agencies, police departments, colleges &amp; universities, &amp; houses of spiritual worship as well as business organizations.',
+    ],
+    links: [
+      { text: 'Employee Mental Health Business Imperative â€” ROI-NJ', url: 'https://www.roi-nj.com/2025/07/10/opinion/op-ed/the-employee-mental-health-business-imperative-op-ed/' }
+    ]
+  },
+  {
+    id: 'campus',
+    label: 'College & University Campus',
+    icon: 'ðŸŽ­',
+    color: '#06B6D4',
+    glowColor: 'rgba(6,182,212,0.65)',
+    angle: 150,
+    bullets: [
+      'Advance student mental health through theater, media &amp; the creative arts in concert with NJ Film Academy starting with Brookdale Community College',
+      'Establish Stone Synergy Soup centers on campus serving as creative spiritual mental health tools within the campus culture and curriculum',
+      'Initiate student entrepreneurship opportunities in mental health media production &amp; Filmanthropy by Design in collaboration with NJ Take 2.',
+    ],
+    links: []
+  },
+  {
+    id: 'film',
+    label: 'NJ Film Industry',
+    icon: 'ðŸŽ¬',
+    color: '#EF4444',
+    glowColor: 'rgba(239,68,68,0.65)',
+    angle: 210,
+    bullets: [
+      'Collaborate with NJEDA &amp; NJ Motion Picture &amp; Television Commission',
+      'Support NJ Take 2 Upcycling Program',
+      'Pilot Filmanthropy by Design service on the college campus with NJ Film Academy',
+      'Launch Civil Rights MOVIEment for the Soulâ„¢ in concert with college student mental health &amp; the faith-based film market research showing an unprecedented boom in 2026',
+    ],
+    links: [
+      { text: 'NJ Take 2 Upcycling Program', url: 'https://www.nj.gov/njfilm/nj-take-2.shtml' }
+    ]
+  }
+];
+
+var CX = 450, CY = 405, ORBIT = 295, CTR_R = 104, PLR_R = 72;
+
+PILLARS.forEach(function(p) {
+  var r = p.angle * Math.PI / 180;
+  p.x = CX + ORBIT * Math.cos(r);
+  p.y = CY + ORBIT * Math.sin(r);
+});
+
+function drawLines() {
+  var svg = document.getElementById('svg-lines');
+  PILLARS.forEach(function(p) {
+    var dx = p.x - CX, dy = p.y - CY;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    var ux = dx/dist, uy = dy/dist;
+    var x1 = CX + ux * CTR_R, y1 = CY + uy * CTR_R;
+    var x2 = p.x - ux * PLR_R, y2 = p.y - uy * PLR_R;
+
+    var glow = makeLine(x1, y1, x2, y2, p.color, 8, 0.18);
+    glow.setAttribute('filter', 'url(#soft-glow)');
+    glow.dataset.pid = p.id;
+    glow.dataset.role = 'glow';
+    svg.appendChild(glow);
+
+    var line = makeLine(x1, y1, x2, y2, p.color, 2, 0.5);
+    line.setAttribute('stroke-dasharray', '7 5');
+    line.dataset.pid = p.id;
+    line.dataset.role = 'line';
+    svg.appendChild(line);
+
+    var dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('r', '4.5');
+    dot.setAttribute('fill', p.color);
+    dot.setAttribute('opacity', '0.85');
+    var mo = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+    mo.setAttribute('dur', (2.2 + PILLARS.indexOf(p) * 0.28) + 's');
+    mo.setAttribute('repeatCount', 'indefinite');
+    mo.setAttribute('path', 'M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2);
+    dot.appendChild(mo);
+    svg.appendChild(dot);
+  });
+}
+
+function makeLine(x1, y1, x2, y2, stroke, width, opacity) {
+  var el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  el.setAttribute('x1', x1); el.setAttribute('y1', y1);
+  el.setAttribute('x2', x2); el.setAttribute('y2', y2);
+  el.setAttribute('stroke', stroke);
+  el.setAttribute('stroke-width', width);
+  el.setAttribute('stroke-opacity', opacity);
+  return el;
+}
+
+function setLineHighlight(id, on) {
+  document.querySelectorAll('[data-pid="' + id + '"]').forEach(function(el) {
+    var isGlow = el.dataset.role === 'glow';
+    if (on) {
+      el.setAttribute('stroke-width', isGlow ? 14 : 3);
+      el.setAttribute('stroke-opacity', isGlow ? 0.4 : 0.9);
+    } else {
+      el.setAttribute('stroke-width', isGlow ? 8 : 2);
+      el.setAttribute('stroke-opacity', isGlow ? 0.18 : 0.5);
+    }
+  });
+}
+
+function renderPillars() {
+  var app = document.getElementById('app');
+  PILLARS.forEach(function(p) {
+    var el = document.createElement('div');
+    el.className = 'pillar';
+    el.id = 'pillar-' + p.id;
+    el.style.left = p.x + 'px';
+    el.style.top  = p.y + 'px';
+
+    var inner = document.createElement('div');
+    inner.className = 'pillar-inner';
+    inner.style.background = 'radial-gradient(circle at 38% 32%, ' + p.color + 'dd 0%, ' + p.color + '99 45%, ' + p.color + '44 100%)';
+    inner.style.boxShadow = '0 0 22px ' + p.glowColor + ', 0 0 50px ' + p.glowColor.replace('0.65','0.2');
+    inner.innerHTML = '<div class="p-icon">' + p.icon + '</div><div class="p-label">' + p.label + '</div>';
+
+    el.appendChild(inner);
+    el.addEventListener('click', function() { openPanel(p); });
+    el.addEventListener('mouseenter', function() { setLineHighlight(p.id, true); });
+    el.addEventListener('mouseleave', function() { setLineHighlight(p.id, false); });
+    app.appendChild(el);
+  });
+}
+
+var currentId = null;
+
+function openPanel(p) {
+  currentId = p.id;
+  document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('pillar-' + p.id).classList.add('active');
+
+  document.getElementById('panel-icon').textContent = p.icon;
+  document.getElementById('panel-title').textContent = p.label;
+  document.getElementById('panel-bar').style.background = p.color;
+
+  var introEl = document.getElementById('panel-intro');
+  if (p.intro) {
+    introEl.style.display = 'block';
+    introEl.innerHTML =
+      '<a class="panel-intro-header" href="' + p.intro.headerUrl + '" target="_blank" rel="noopener">&#8599; ' + p.intro.headerText + '</a>' +
+      '<p class="panel-intro-tagline">' + p.intro.tagline + '</p>' +
+      '<p class="panel-intro-desc">' + p.intro.description + '</p>';
+  } else {
+    introEl.style.display = 'none';
+    introEl.innerHTML = '';
+  }
+
+  var list = document.getElementById('panel-list');
+  list.innerHTML = p.bullets.map(function(b) {
+    return '<li><div class="p-dot" style="background:' + p.color + '"></div><span>' + b + '</span></li>';
+  }).join('');
+
+  var linksEl = document.getElementById('panel-links');
+  if (p.links && p.links.length) {
+    linksEl.style.display = 'flex';
+    linksEl.innerHTML = '<div class="links-heading">Resources</div>' +
+      p.links.map(function(l) {
+        return '<a class="panel-link" href="' + l.url + '" target="_blank" rel="noopener">&#8599; ' + l.text + '</a>';
+      }).join('');
+  } else {
+    linksEl.style.display = 'none';
+  }
+
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
+  currentId = null;
+}
+
+document.getElementById('center').addEventListener('click', function() {
+  closePanel();
+  openPotModal();
+});
+
+var allOpen = false;
+
+function buildAllContent() {
+  var wrap = document.getElementById('all-content');
+  if (wrap.innerHTML) return;
+  wrap.innerHTML = PILLARS.map(function(p) {
+    var introHtml = p.intro
+      ? '<a class="panel-intro-header" href="' + p.intro.headerUrl + '" target="_blank" rel="noopener">&#8599; ' + p.intro.headerText + '</a>' +
+        '<p class="panel-intro-tagline">' + p.intro.tagline + '</p>' +
+        '<p class="panel-intro-desc" style="margin-bottom:10px">' + p.intro.description + '</p>'
+      : '';
+    var bulletHtml = p.bullets.map(function(b) {
+      return '<li>' + b + '</li>';
+    }).join('');
+    var linkHtml = p.links.map(function(l) {
+      return '<a class="all-link" href="' + l.url + '" target="_blank" rel="noopener">&#8599; ' + l.text + '</a>';
+    }).join('');
+    return (
+      '<div class="all-item">' +
+        '<div class="all-item-header" data-open="' + p.id + '">' +
+          '<span class="all-item-icon">' + p.icon + '</span>' +
+          '<span class="all-item-title" style="color:' + p.color + '">' + p.label + '</span>' +
+        '</div>' +
+        introHtml +
+        '<ul class="all-bullets">' + bulletHtml + '</ul>' +
+        linkHtml +
+      '</div>'
+    );
+  }).join('');
+
+  (function() {
+    var s = document.createElement('style');
+    PILLARS.forEach(function(p, i) {
+      s.textContent += '#all-content .all-item:nth-child(' + (i+1) + ') .all-bullets li::before { color: ' + p.color + '; }\n';
+    });
+    document.head.appendChild(s);
+  })();
+
+  document.querySelectorAll('[data-open]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var id = el.dataset.open;
+      var p = PILLARS.find(function(x) { return x.id === id; });
+      if (p) openPanel(p);
+    });
+  });
+}
+
+function toggleAll() {
+  allOpen = !allOpen;
+  var btn = document.getElementById('btn-all');
+  var panel = document.getElementById('all-panel');
+  if (allOpen) {
+    buildAllContent();
+    panel.classList.add('open');
+    btn.style.visibility = 'hidden';
+  } else {
+    panel.classList.remove('open');
+    btn.style.visibility = 'visible';
+  }
+}
+
+(function createStars() {
+  for (var i = 0; i < 90; i++) {
+    var s = document.createElement('div');
+    s.className = 'star';
+    var sz = Math.random() * 1.8 + 0.4;
+    s.style.cssText = 'width:' + sz + 'px;height:' + sz + 'px;top:' + (Math.random()*100) + '%;left:' + (Math.random()*100) + '%;animation-delay:' + (Math.random()*4) + 's;animation-duration:' + (2+Math.random()*3) + 's;';
+    document.body.appendChild(s);
+  }
+})();
+
+document.getElementById('panel-close-btn').addEventListener('click', closePanel);
+document.getElementById('all-close-btn').addEventListener('click', toggleAll);
+document.getElementById('btn-all').addEventListener('click', toggleAll);
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('panel').classList.contains('open')) {
+      closePanel();
+    } else if (allOpen) {
+      toggleAll();
+    }
+  }
+});
+
+// â”€â”€ Ingredients â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+var ING_KEY = 'sss_ingredients_v1';
+var ING_COLORS = ['#F59E0B','#10B981','#3B82F6','#EC4899','#8B5CF6','#F97316','#06B6D4','#84CC16','#EF4444','#A78BFA'];
+
+// Positions as % of center div (208px). Clustered in the pot's soup bowl area.
+var ING_SPOTS = [
+  {l:38,t:52},{l:54,t:50},{l:46,t:61},{l:30,t:58},
+  {l:62,t:55},{l:40,t:68},{l:56,t:67},{l:33,t:42},
+  {l:60,t:43},{l:47,t:74},{l:27,t:64},{l:64,t:69}
+];
+
+function saveIngredients(list) {
+  try { localStorage.setItem(ING_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function loadIngredients() {
+  try { var r = localStorage.getItem(ING_KEY); return r ? JSON.parse(r) : []; }
+  catch(e) { return []; }
+}
+
+var ingredients = loadIngredients();
+
+function ingColor(i)  { return ING_COLORS[i % ING_COLORS.length]; }
+function ingSpot(i)   { return ING_SPOTS[i % ING_SPOTS.length]; }
+
+// â”€â”€ Render mini dots inside the main-map center pot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderMapDots() {
+  document.querySelectorAll('.ing-dot').forEach(function(d){ d.remove(); });
+  var ctr = document.getElementById('center');
+  ingredients.forEach(function(ing, i) {
+    var s = ingSpot(i);
+    var dot = document.createElement('div');
+    dot.className = 'ing-dot';
+    dot.style.cssText = 'background:' + ing.color + ';left:' + s.l + '%;top:' + s.t + '%;';
+    dot.textContent = i + 1;
+    dot.title = ing.text.slice(0,80) + (ing.text.length > 80 ? 'â€¦' : '');
+    dot.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openIngredientPanel(ing, i);
+    });
+    ctr.appendChild(dot);
+  });
+}
+
+// â”€â”€ Open side panel with ingredient content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openIngredientPanel(ing, idx) {
+  closePotModal();
+  document.querySelectorAll('.pillar').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('panel-icon').textContent = 'ðŸ¥„';
+  document.getElementById('panel-title').textContent = 'Ingredient #' + (idx + 1);
+  document.getElementById('panel-bar').style.background = ing.color;
+  document.getElementById('panel-list').innerHTML =
+    '<li><div class="p-dot" style="background:' + ing.color + '"></div><span>' + ing.text + '</span></li>';
+  document.getElementById('panel-links').style.display = 'none';
+  document.getElementById('panel').classList.add('open');
+}
+
+// â”€â”€ Pot modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+var potModalOpen = false;
+
+function openPotModal() {
+  potModalOpen = true;
+  renderModalDots();
+  renderModalList();
+  document.getElementById('pot-modal').classList.add('open');
+}
+
+function closePotModal() {
+  potModalOpen = false;
+  editingIdx = -1;
+  document.getElementById('pot-save-btn').textContent = 'Save';
+  document.getElementById('pot-modal').classList.remove('open');
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+}
+
+function renderModalDots() {
+  var bowl = document.getElementById('pot-modal-bowl');
+  bowl.querySelectorAll('.ing-dot-modal').forEach(function(d){ d.remove(); });
+  ingredients.forEach(function(ing, i) {
+    var s = ingSpot(i);
+    var dot = document.createElement('div');
+    dot.className = 'ing-dot-modal';
+    dot.style.cssText = 'background:' + ing.color + ';left:' + s.l + '%;top:' + s.t + '%;';
+    dot.textContent = i + 1;
+    dot.title = ing.text.slice(0,60);
+    dot.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openIngredientPanel(ing, i);
+    });
+    bowl.appendChild(dot);
+  });
+}
+
+function renderModalList() {
+  var list = document.getElementById('pot-ing-list');
+  if (!ingredients.length) {
+    list.innerHTML = '<div class="ing-empty">No ingredients yet â€” add the first one below!</div>';
+    return;
+  }
+  list.innerHTML = ingredients.map(function(ing, i) {
+    return '<div class="ing-list-item" data-idx="' + i + '">' +
+      '<div class="ing-list-dot" style="background:' + ing.color + '"></div>' +
+      '<div class="ing-list-text">' + ing.text + '</div>' +
+      '<div class="ing-item-actions">' +
+        '<button class="ing-action-btn edit-btn" data-idx="' + i + '" title="Edit">&#x270F;&#xFE0F;</button>' +
+        '<button class="ing-action-btn del del-btn" data-idx="' + i + '" title="Delete">&#x1F5D1;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  list.querySelectorAll('.ing-list-item').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      if (e.target.closest('.ing-item-actions')) return;
+      openIngredientPanel(ingredients[+item.dataset.idx], +item.dataset.idx);
+    });
+  });
+  list.querySelectorAll('.edit-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      editIngredient(+btn.dataset.idx);
+    });
+  });
+  list.querySelectorAll('.del-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      deleteIngredient(+btn.dataset.idx);
+    });
+  });
+}
+
+// â”€â”€ Add / edit ingredient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+var editingIdx = -1;
+
+function checkPassword() {
+  return prompt('Password required:') === '999';
+}
+
+function editIngredient(idx) {
+  if (!checkPassword()) { alert('Incorrect password.'); return; }
+  editingIdx = idx;
+  document.getElementById('pot-text-input').value = ingredients[idx].text;
+  document.getElementById('pot-save-btn').textContent = 'Update';
+  var form = document.getElementById('pot-add-form');
+  form.classList.add('visible');
+  setTimeout(function() { document.getElementById('pot-text-input').focus(); }, 50);
+}
+
+function deleteIngredient(idx) {
+  if (!checkPassword()) { alert('Incorrect password.'); return; }
+  ingredients.splice(idx, 1);
+  saveIngredients(ingredients);
+  renderMapDots();
+  renderModalDots();
+  renderModalList();
+}
+
+function commitIngredient(text) {
+  text = text.trim();
+  if (!text) return;
+  var wasEditing = editingIdx >= 0;
+  if (wasEditing) {
+    ingredients[editingIdx].text = text;
+    editingIdx = -1;
+    document.getElementById('pot-save-btn').textContent = 'Save';
+  } else {
+    ingredients.push({ id: 'ing_' + Date.now(), text: text, color: ingColor(ingredients.length) });
+  }
+  saveIngredients(ingredients);
+  renderMapDots();
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+  if (wasEditing) {
+    renderModalDots();
+    renderModalList();
+  } else {
+    closePotModal();
+  }
+}
+
+// â”€â”€ Export / Import â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function exportIngredients() {
+  var data = JSON.stringify({ version: 1, exported: new Date().toISOString(), ingredients: ingredients }, null, 2);
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+  a.download = 'stone-synergy-soup-ingredients.json';
+  a.click();
+}
+
+function importIngredients(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var raw = JSON.parse(e.target.result);
+      var list = Array.isArray(raw) ? raw : (raw.ingredients || []);
+      if (!Array.isArray(list)) throw '';
+      ingredients = list;
+      saveIngredients(ingredients);
+      renderMapDots();
+      if (potModalOpen) { renderModalDots(); renderModalList(); }
+      alert('Imported ' + list.length + ' ingredient' + (list.length === 1 ? '' : 's') + '.');
+    } catch(_) { alert('Could not read file â€” make sure it\'s a valid export.'); }
+  };
+  reader.readAsText(file);
+}
+
+// â”€â”€ Wire up pot modal events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.getElementById('pot-modal-close').addEventListener('click', closePotModal);
+document.getElementById('pot-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePotModal();
+});
+document.getElementById('pot-add-btn').addEventListener('click', function() {
+  document.getElementById('pot-add-form').classList.add('visible');
+  setTimeout(function(){ document.getElementById('pot-text-input').focus(); }, 50);
+});
+document.getElementById('pot-cancel-btn').addEventListener('click', function() {
+  editingIdx = -1;
+  document.getElementById('pot-save-btn').textContent = 'Save';
+  document.getElementById('pot-add-form').classList.remove('visible');
+  document.getElementById('pot-text-input').value = '';
+});
+document.getElementById('pot-save-btn').addEventListener('click', function() {
+  commitIngredient(document.getElementById('pot-text-input').value);
+});
+document.getElementById('pot-text-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) commitIngredient(this.value);
+});
+document.getElementById('export-btn').addEventListener('click', exportIngredients);
+document.getElementById('import-input').addEventListener('change', function() {
+  if (this.files[0]) { importIngredients(this.files[0]); this.value = ''; }
+});
+
+// â”€â”€ Story modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.getElementById('header').querySelector('h1').addEventListener('click', function() {
+  document.getElementById('story-modal').classList.add('open');
+});
+document.getElementById('story-modal-close').addEventListener('click', function() {
+  document.getElementById('story-modal').classList.remove('open');
+});
+document.getElementById('story-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.getElementById('story-modal').classList.remove('open');
+});
+
+// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+drawLines();
+renderPillars();
+</script>
+</body>
+</html>
+
