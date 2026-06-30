@@ -383,6 +383,11 @@ body {
 .view-btn.active { border-color: rgba(212,160,68,0.85); color: rgba(212,160,68,1); background: rgba(212,160,68,0.13); box-shadow: 0 0 12px rgba(212,160,68,0.28); }
 #view-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.28); text-align: center; font-family: 'Segoe UI',sans-serif; pointer-events: none; padding: 0 4px; white-space: nowrap; }
 #viz-canvas { position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: none; z-index: 8; }
+#spotify-player { position: fixed; bottom: 70px; right: 20px; width: 300px; background: rgba(6,6,18,0.97); border: 1px solid rgba(29,185,84,0.35); border-radius: 16px; overflow: hidden; z-index: 449; display: none; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+#spotify-player iframe { display: block; width: 100%; }
+#spotify-btn { color: #1DB954 !important; border-color: rgba(29,185,84,0.4) !important; }
+#spotify-btn.open { background: rgba(29,185,84,0.14) !important; border-color: rgba(29,185,84,0.8) !important; box-shadow: 0 0 12px rgba(29,185,84,0.3) !important; }
+.tray-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
 .panel-link-inline:hover {
   color: rgba(180,210,255,1);
   text-decoration: underline;
@@ -3082,10 +3087,29 @@ function startDepth() {
   drawDepth();
 }
 
-window.addEventListener('load', function() { vizInit(); });
+function toggleSpotify() {
+  var player = document.getElementById('spotify-player');
+  var btn = document.getElementById('spotify-btn');
+  var open = player.style.display !== 'none';
+  player.style.display = open ? 'none' : 'block';
+  btn.classList.toggle('open', !open);
+}
+
+window.addEventListener('load', function() {
+  vizInit();
+  if (ADMIN_MODE) {
+    document.getElementById('spotify-btn').style.display = '';
+    document.getElementById('spotify-divider').style.display = '';
+  }
+});
 </script>
 <canvas id="viz-canvas"></canvas>
+<div id="spotify-player">
+  <iframe src="https://open.spotify.com/embed/playlist/6U92wK8NdQtmUWL0EQvEO8?utm_source=generator" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
 <div id="view-tray">
+  <button id="spotify-btn" class="view-btn" title="Stone Synergy Soup playlist" onclick="toggleSpotify()" style="display:none;">&#9835;</button>
+  <div class="tray-divider" id="spotify-divider" style="display:none;"></div>
   <div id="view-label">Orbit</div>
   <button class="view-btn active" data-view="orbit" title="Orbit — holonic map" onclick="setVizView('orbit')">&#9737;</button>
   <button class="view-btn" data-view="mycelium" title="Mycelium Web — force graph" onclick="setVizView('mycelium')">&#9901;</button>
