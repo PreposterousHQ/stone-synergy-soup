@@ -896,7 +896,6 @@ body {
   padding: 5px 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.cs-row:last-child { border-bottom: none; }
 .cs-dot {
   width: 26px; height: 26px;
   border-radius: 50%;
@@ -920,12 +919,13 @@ body {
   width: 272px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 18px;
   z-index: 50;
   max-height: calc(100vh - 40px);
   overflow: hidden;
 }
 #mhr-image {
+  margin-top: 6px;
   width: 100%;
   border-radius: 8px;
   border: 1.5px solid rgba(212,160,68,0.4);
@@ -933,20 +933,15 @@ body {
   box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 .cs-rows {
-  height: 148px;
+  height: 168px;
   overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 .cs-rows-inner {
-  animation: cs-scroll 16s linear infinite;
+  will-change: transform;
 }
-.cs-rows-inner:hover {
-  animation-play-state: paused;
-}
-@keyframes cs-scroll {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
+100% { transform: translateY(-50%); }
 }
 </style>
 </head>
@@ -1626,9 +1621,31 @@ document.addEventListener('keydown', function(e) {
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 drawLines();
 renderPillars();
+// Calling sheet smooth scroll
+(function() {
+  var inner = document.querySelector('.cs-rows-inner');
+  if (!inner) return;
+  var pos = 0;
+  var paused = false;
+  inner.parentElement.addEventListener('mouseenter', function() { paused = true; });
+  inner.parentElement.addEventListener('mouseleave', function() { paused = false; });
+  var halfH;
+  function tick() {
+    if (!halfH) halfH = inner.scrollHeight / 2;
+    if (!paused) {
+      pos += 0.4;
+      if (pos >= halfH) pos = 0;
+      inner.style.transform = 'translateY(-' + pos + 'px)';
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>
+
+
 
 
 
