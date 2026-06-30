@@ -1024,11 +1024,66 @@ body {
   background: linear-gradient(135deg,#6b2e0a,#D4A044) !important;
   border-color: #D4A044 !important; color: #fff !important;
 }
+/* ── Calling Sheet info modal ── */
+.cs-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cs-info-btn {
+  background: none;
+  border: 1px solid rgba(212,160,68,0.35);
+  color: rgba(212,160,68,0.7);
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  line-height: 1;
+  padding: 0;
+  font-family: Georgia, serif;
+}
+.cs-info-btn:hover { border-color: #D4A044; color: #D4A044; background: rgba(212,160,68,0.08); }
+#cs-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+  z-index: 400; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.32s ease;
+}
+#cs-modal.open { opacity: 1; pointer-events: all; }
+#cs-modal-dialog {
+  background: rgba(6,6,18,0.98);
+  border: 1px solid rgba(212,160,68,0.25);
+  border-radius: 14px; padding: 44px 48px 40px;
+  max-width: 580px; width: 90%; position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+  animation: potModalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  max-height: 88vh; overflow-y: auto;
+}
+#cs-modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.08); border: none;
+  color: rgba(255,255,255,0.6); width: 30px; height: 30px;
+  border-radius: 50%; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+#cs-modal-close:hover { background: rgba(255,255,255,0.22); }
+#cs-modal h2 {
+  font-size: 22px; color: #D4A044; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 24px; font-family: inherit;
+}
+#cs-modal p {
+  color: rgba(255,255,255,0.78); font-size: 14px;
+  line-height: 1.75; margin-bottom: 16px;
+}
+#cs-modal p:last-child { margin-bottom: 0; color: rgba(212,160,68,0.85); font-style: italic; border-top: 1px solid rgba(212,160,68,0.15); padding-top: 16px; }
 </style>
 </head>
 <body>
 <div id="left-panel"><div id="calling-sheet">
-  <div class="cs-title">Moviement Calling Sheet</div>
+  <div class="cs-title">Moviement Calling Sheet<button class="cs-info-btn" id="cs-info-btn" title="What is a Calling Sheet?">i</button></div>
   <div class="cs-rows"><div class="cs-rows-inner">
   <div class="cs-row"><div class="cs-dot" style="background:#3B82F6"><svg width="15" height="15" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg></div><div class="cs-name">Episode: Dr. Dale G. Caldwell</div></div>
   <div class="cs-row"><div class="cs-dot" style="background:#8B5CF6"><svg width="15" height="15" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg></div><div class="cs-name">Episode: Dr. David M. Stout</div></div>
@@ -1938,8 +1993,18 @@ document.addEventListener('keydown', function(e) {
       <button id="child-modal-save">Save</button>
     </div>
   </div>
+</div><div id="cs-modal">
+  <div id="cs-modal-dialog">
+    <button id="cs-modal-close">&#x2715;</button>
+    <h2>The Calling Sheet</h2>
+    <p>On a film set, the document that runs the day is the call sheet — a logistical instrument that tells each person when to arrive, where to stand, and what&#8217;s required of them. It is the paperwork of a zero-sum world: time is scarce, attention is rationed, and every name is reduced to a function and a call time. It calls people to work.</p>
+    <p>We keep the discipline a call sheet provides — the gathering still has a place and an hour — but we refuse its register, because what we are making is not extracted from people; it is offered by them. So we call ours a Calling Sheet.</p>
+    <p>A calling sheet does not summon a crew to a slot; it names what each person is called toward — the gift only they can bring to the pot. Where a call sheet lists roles, a calling sheet lists callings: not &#8220;the Lieutenant Governor, 8 a.m.,&#8221; but a whole human being arriving with an ingredient no one else carries.</p>
+    <p>It is the Stone Soup made into a document — proof, on a single page, that the feast was never about the stone, and never about the call time. It was always about who chose to come, and what they chose to bring.</p>
+  </div>
 </div></body>
 </html>
+
 
 
 
