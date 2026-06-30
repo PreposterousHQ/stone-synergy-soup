@@ -1430,7 +1430,41 @@ function openPanel(p) {
     linksEl.style.display = 'none';
   }
 
-  document.getElementById('panel').classList.add('open');
+  ['panel-child-edit','panel-also-in','panel-admin-section','panel-resonate-wrap'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.remove();
+  });
+  var pEl = document.getElementById('panel');
+  var rWrapP = document.createElement('div');
+  rWrapP.id = 'panel-resonate-wrap';
+  rWrapP.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:16px;';
+  var rBtnP = document.createElement('button');
+  rBtnP.className = 'resonate-btn';
+  (function(pid, pname) {
+    updateResonateBtn(rBtnP, pid);
+    rBtnP.onclick = function() {
+      applyResonateClick(rBtnP, pid, function() {
+        renderPillarRings();
+        var cb = document.getElementById('panel-clear-btn');
+        if (cb) { var c = resonanceData[pid]||0; cb.textContent='Clear resonances ('+c+')'; cb.style.display=c>0?'':'none'; }
+      });
+    };
+    if (ADMIN_MODE) {
+      var cbP = document.createElement('button');
+      cbP.id = 'panel-clear-btn';
+      cbP.className = 'panel-clear-resonances';
+      var c0 = resonanceData[pid] || 0;
+      cbP.textContent = 'Clear resonances (' + c0 + ')';
+      cbP.style.display = c0 > 0 ? '' : 'none';
+      cbP.onclick = function() {
+        if (!window.confirm('Clear all ' + (resonanceData[pid]||0) + ' resonances for "' + pname + '"?')) return;
+        delete myResonances[pid]; delete resonanceData[pid]; saveResonances();
+        cbP.style.display = 'none'; updateResonateBtn(rBtnP, pid); renderPillarRings();
+      };
+      rWrapP.appendChild(rBtnP); rWrapP.appendChild(cbP);
+    } else { rWrapP.appendChild(rBtnP); }
+  })(p.id, p.name);
+  pEl.appendChild(rWrapP);
+  pEl.classList.add('open');
 }
 
 function closePanel() {
@@ -1773,6 +1807,7 @@ document.addEventListener('keydown', function(e) {
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 drawLines();
 renderPillars();
+renderPillarRings();
 // Calling sheet smooth scroll
 (function() {
   var inner = document.querySelector('.cs-rows-inner');
@@ -1800,10 +1835,74 @@ var drillStack = [];
 function currentDrill() { return drillStack.length ? drillStack[drillStack.length-1] : null; }
 var childData = {};
 var resonanceData = {};
+var myResonances = {};
+var resonanceTimestamps = {};
 function loadResonances() {
   try { resonanceData = JSON.parse(localStorage.getItem('sss_resonances') || '{}'); } catch(e) { resonanceData = {}; }
 }
 function saveResonances() { localStorage.setItem('sss_resonances', JSON.stringify(resonanceData)); }
+
+function updateResonateBtn(btn, resolvedId) {
+  var rCount = resonanceData[resolvedId] || 0;
+  if (myResonances[resolvedId]) {
+    btn.innerHTML = '★ Resonating' + (rCount > 0 ? ' <span class="resonate-count">'+rCount+'</span>' : '');
+    btn.style.background = 'linear-gradient(135deg,rgba(100,80,200,0.22),rgba(212,160,68,0.22))';
+    btn.style.borderColor = 'rgba(212,160,68,0.7)';
+  } else {
+    btn.innerHTML = '✦ Resonate' + (rCount > 0 ? ' <span class="resonate-count">'+rCount+'</span>' : '');
+    btn.style.background = '';
+    btn.style.borderColor = '';
+  }
+}
+
+function applyResonateClick(btn, resolvedId, onUpdate) {
+  if (myResonances[resolvedId]) {
+    resonanceData[resolvedId] = Math.max(0, (resonanceData[resolvedId] || 1) - 1);
+    if (resonanceData[resolvedId] === 0) delete resonanceData[resolvedId];
+    delete myResonances[resolvedId];
+    saveResonances();
+    updateResonateBtn(btn, resolvedId);
+    if (onUpdate) onUpdate();
+  } else {
+    var now = Date.now();
+    var wait = 60000 - (now - (resonanceTimestamps[resolvedId] || 0));
+    if (wait > 0) {
+      var origHtml = btn.innerHTML;
+      btn.innerHTML = '⏱ Wait ' + Math.ceil(wait/1000) + 's';
+      btn.disabled = true;
+      setTimeout(function() { btn.disabled = false; updateResonateBtn(btn, resolvedId); }, Math.min(wait, 2500));
+      return;
+    }
+    resonanceData[resolvedId] = (resonanceData[resolvedId] || 0) + 1;
+    myResonances[resolvedId] = true;
+    resonanceTimestamps[resolvedId] = now;
+    saveResonances();
+    updateResonateBtn(btn, resolvedId);
+    if (onUpdate) onUpdate();
+  }
+}
+
+function renderPillarRings() {
+  document.querySelectorAll('.pillar-resonate-ring').forEach(function(n) { n.remove(); });
+  var app = document.getElementById('app');
+  PILLARS.forEach(function(p) {
+    var rCount = resonanceData[p.id] || 0;
+    if (rCount < 1) return;
+    var numDots = Math.min(Math.ceil(rCount / 2), 10);
+    var speed = Math.max(7 - rCount * 0.25, 2.5).toFixed(1);
+    var ring = document.createElement('div');
+    ring.className = 'resonate-ring pillar-resonate-ring';
+    ring.style.left = p.x + 'px'; ring.style.top = p.y + 'px';
+    ring.style.animationDuration = speed + 's';
+    for (var d = 0; d < numDots; d++) {
+      var rdot = document.createElement('div');
+      rdot.className = 'resonate-dot';
+      rdot.style.transform = 'rotate('+(360/numDots*d)+'deg) translateX(82px)';
+      ring.appendChild(rdot);
+    }
+    app.appendChild(ring);
+  });
+}
 
 function loadChildren() {
   try { childData = JSON.parse(localStorage.getItem('sss_children') || '{}'); } catch(e) { childData = {}; }
@@ -2064,7 +2163,7 @@ function renderChildMap(frame) {
     node.style.left = cx+'px'; node.style.top = cy+'px';
     node.style.background = 'radial-gradient(circle at 38% 32%,'+lightenHex(frame.color,0.35)+' 0%,'+frame.color+'99 45%,'+frame.color+'44 100%)';
     var resolved = resolveNode(child);
-    var isNamed = resolved.title && resolved.title !== 'Theme';
+    var isNamed = resolved.title && !/^(theme|node)\s*\d*$/i.test(resolved.title.trim());
     var rCount = resonanceData[resolved.id] || 0;
     var baseShadow = '0 0 22px '+frame.glowColor+',0 0 50px '+frame.glowColor.replace('0.65','0.2');
     if (isNamed) baseShadow += ',0 0 38px rgba(212,160,68,0.55),0 0 70px rgba(212,160,68,0.22),0 0 100px rgba(212,160,68,0.1)';
@@ -2145,33 +2244,37 @@ function showChildPanel(frame, child) {
   var rWrap = document.createElement('div');
   rWrap.id = 'panel-resonate-wrap';
   rWrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;';
-  var rCount = resonanceData[resolved.id] || 0;
   var resonateBtn = document.createElement('button');
   resonateBtn.className = 'resonate-btn';
-  resonateBtn.innerHTML = '✦ Resonate' + (rCount > 0 ? ' <span class="resonate-count">'+rCount+'</span>' : '');
-  (function(rid, fr, ch) {
+  (function(rid, ttl) {
+    updateResonateBtn(resonateBtn, rid);
     resonateBtn.onclick = function() {
-      resonanceData[rid] = (resonanceData[rid] || 0) + 1;
-      saveResonances();
-      showChildPanel(fr, ch);
-      var cd = currentDrill(); if (cd) renderChildMap(cd);
+      applyResonateClick(resonateBtn, rid, function() {
+        var cd = currentDrill(); if (cd) renderChildMap(cd);
+        var cb = document.getElementById('panel-clear-btn');
+        if (cb) { var c = resonanceData[rid]||0; cb.textContent='Clear resonances ('+c+')'; cb.style.display=c>0?'':'none'; }
+      });
     };
-  })(resolved.id, frame, child);
-  rWrap.appendChild(resonateBtn);
-  if (ADMIN_MODE && rCount > 0) {
-    var clearBtn = document.createElement('button');
-    clearBtn.className = 'panel-clear-resonances';
-    clearBtn.textContent = 'Clear resonances (' + rCount + ')';
-    (function(rid, fr, ch) {
+    if (ADMIN_MODE) {
+      var clearBtn = document.createElement('button');
+      clearBtn.id = 'panel-clear-btn';
+      clearBtn.className = 'panel-clear-resonances';
+      var c0 = resonanceData[rid] || 0;
+      clearBtn.textContent = 'Clear resonances (' + c0 + ')';
+      clearBtn.style.display = c0 > 0 ? '' : 'none';
       clearBtn.onclick = function() {
-        if (!window.confirm('Clear all ' + resonanceData[rid] + ' resonances for "' + resolved.title + '"?')) return;
-        delete resonanceData[rid]; saveResonances();
-        showChildPanel(fr, ch);
+        if (!window.confirm('Clear all ' + (resonanceData[rid]||0) + ' resonances for "' + ttl + '"?')) return;
+        delete myResonances[rid]; delete resonanceData[rid]; saveResonances();
+        clearBtn.style.display = 'none';
+        updateResonateBtn(resonateBtn, rid);
         var cd = currentDrill(); if (cd) renderChildMap(cd);
       };
-    })(resolved.id, frame, child);
-    rWrap.appendChild(clearBtn);
-  }
+      rWrap.appendChild(resonateBtn);
+      rWrap.appendChild(clearBtn);
+    } else {
+      rWrap.appendChild(resonateBtn);
+    }
+  })(resolved.id, resolved.title);
   panelEl.appendChild(rWrap);
 
   var locations = findNodeLocations(resolved.id);
