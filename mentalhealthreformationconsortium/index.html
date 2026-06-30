@@ -354,6 +354,16 @@ body {
   background: #000;
 }
 .panel-video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+.modal-link-row { display: flex; gap: 6px; align-items: center; }
+.modal-link-row input { flex: 1; }
+.modal-link-row button { padding: 0 10px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.55); cursor: pointer; font-size: 14px; flex-shrink: 0; font-family: inherit; }
+.panel-also-in { margin: 10px 22px 0; font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; line-height: 1.6; }
+.panel-also-in span { color: rgba(255,255,255,0.65); }
+.panel-admin-section { margin: 14px 22px 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; gap: 8px; }
+.panel-holon-row { display: flex; gap: 8px; align-items: center; }
+.panel-holon-row select { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 6px; color: #fff; font-size: 11px; padding: 6px 8px; font-family: inherit; outline: none; cursor: pointer; }
+.panel-holon-row button { padding: 6px 14px; border-radius: 14px; border: 1px solid rgba(212,160,68,0.4); background: rgba(212,160,68,0.1); color: rgba(212,160,68,0.9); font-size: 10px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.panel-remove-btn { padding: 6px 14px; background: none; border: 1px solid rgba(255,80,80,0.3); border-radius: 14px; color: rgba(255,100,100,0.7); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-family: inherit; text-align: center; }
 .panel-link-inline:hover {
   color: rgba(180,210,255,1);
   text-decoration: underline;
@@ -1837,7 +1847,9 @@ function drillInto(p) {
 
 function drillIntoChild(child) {
   var parent = currentDrill();
-  drillStack.push({ id: child.id, name: child.title, color: parent.color, glowColor: parent.glowColor, icon: null });
+  var resolved = resolveNode(child);
+  var targetId = child.refId || child.id;
+  drillStack.push({ id: targetId, name: resolved.title, color: parent.color, glowColor: parent.glowColor, icon: null });
   enterDrillFrame(currentDrill());
 }
 
@@ -1862,6 +1874,73 @@ function drillOut() {
   } else {
     enterDrillFrame(frame);
   }
+}
+
+function resolveNode(child) {
+  if (!child.refId) return child;
+  var found = null;
+  Object.keys(childData).forEach(function(pid) {
+    if (found) return;
+    childData[pid].forEach(function(c) { if (!found && c.id === child.refId && !c.refId) found = c; });
+  });
+  return found || child;
+}
+
+function getNodeLinks(child) {
+  if (child.links && child.links.length) return child.links;
+  if (child.link) return [child.link];
+  return [];
+}
+
+function findNodeLocations(resolvedId) {
+  var locs = [];
+  Object.keys(childData).forEach(function(pid) {
+    childData[pid].forEach(function(c) {
+      if ((c.id === resolvedId || c.refId === resolvedId) && locs.indexOf(pid) === -1) locs.push(pid);
+    });
+  });
+  return locs;
+}
+
+function holonDisplayName(id) {
+  for (var i = 0; i < PILLARS.length; i++) { if (PILLARS[i].id === id) return PILLARS[i].name; }
+  var found = null;
+  Object.keys(childData).forEach(function(pid) {
+    if (found) return;
+    childData[pid].forEach(function(c) { if (!found && c.id === id && !c.refId) found = c; });
+  });
+  return found ? found.title : id;
+}
+
+function linkNodeToHolon(child, targetPid) {
+  var resolved = resolveNode(child);
+  var sourceId = resolved.id;
+  if (!childData[targetPid]) childData[targetPid] = [];
+  var already = childData[targetPid].some(function(c) { return c.id === sourceId || c.refId === sourceId; });
+  if (already) return false;
+  childData[targetPid].push({ id: 'cn_ref_' + Date.now(), refId: sourceId });
+  saveChildren();
+  return true;
+}
+
+function removeNodeFromParent(parentId, child) {
+  if (!childData[parentId]) return;
+  if (child.refId) {
+    childData[parentId] = childData[parentId].filter(function(c) { return c.id !== child.id; });
+  } else {
+    var promoted = false;
+    Object.keys(childData).forEach(function(pid) {
+      if (promoted) return;
+      childData[pid].forEach(function(c, i) {
+        if (!promoted && c.refId === child.id) {
+          childData[pid][i] = { id: child.id, title: child.title, body: child.body, links: child.links, link: child.link };
+          promoted = true;
+        }
+      });
+    });
+    childData[parentId] = childData[parentId].filter(function(c) { return c.id !== child.id; });
+  }
+  saveChildren();
 }
 
 function renderChildMap(frame) {
@@ -1919,7 +1998,8 @@ function renderChildMap(frame) {
     node.style.background = 'radial-gradient(circle at 38% 32%,'+lightenHex(frame.color,0.35)+' 0%,'+frame.color+'99 45%,'+frame.color+'44 100%)';
     node.style.boxShadow = '0 0 22px '+frame.glowColor+',0 0 50px '+frame.glowColor.replace('0.65','0.2');
     node.style.borderColor = lightenHex(frame.color,0.3);
-    node.innerHTML = '<div style=”color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.3;width:88px;text-transform:uppercase;letter-spacing:0.5px;word-break:break-word;overflow-wrap:break-word;text-shadow:0 1px 6px rgba(0,0,0,0.9);flex-shrink:0;”>'+escHtml(child.title)+'</div>';
+    var resolved = resolveNode(child);
+    node.innerHTML = '<div style=”color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.3;width:88px;text-transform:uppercase;letter-spacing:0.5px;word-break:break-word;overflow-wrap:break-word;text-shadow:0 1px 6px rgba(0,0,0,0.9);flex-shrink:0;”>'+(child.refId?'🔗 ':'')+escHtml(resolved.title)+'</div>';
     (function(c) {
       node.addEventListener('click', function(e) { e.stopPropagation(); showChildPanel(frame, c); });
       node.addEventListener('dblclick', function(e) { e.stopPropagation(); drillIntoChild(c); });
@@ -1939,39 +2019,127 @@ function getYouTubeId(url) {
 }
 
 function showChildPanel(frame, child) {
+  _panelFrame = frame; _panelChild = child;
+  var resolved = resolveNode(child);
   document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
   document.getElementById('panel-icon').innerHTML = frame.icon || '';
-  document.getElementById('panel-title').textContent = child.title;
+  document.getElementById('panel-title').textContent = resolved.title;
   document.getElementById('panel-bar').style.background = frame.color;
   document.getElementById('panel-intro').style.display = 'none';
   var list = document.getElementById('panel-list');
-  list.innerHTML = child.body
-    ? '<li><div class="p-dot" style="background:'+frame.color+'"></div><span>'+escHtml(child.body)+'</span></li>'
+  list.innerHTML = resolved.body
+    ? '<li><div class="p-dot" style="background:'+frame.color+'"></div><span>'+escHtml(resolved.body)+'</span></li>'
     : '';
+
   var linksEl = document.getElementById('panel-links');
-  var existingEdit = document.getElementById('panel-child-edit');
-  if (existingEdit) existingEdit.remove();
-  if (child.link) {
+  var nodeLinks = getNodeLinks(resolved);
+  if (nodeLinks.length) {
     linksEl.style.display = 'flex';
-    var ytId = getYouTubeId(child.link);
-    if (ytId) {
-      linksEl.innerHTML = '<div class="links-heading">Video</div><div class="panel-video-wrap"><iframe src="https://www.youtube.com/embed/'+ytId+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
-    } else {
-      linksEl.innerHTML = '<div class="links-heading">Link</div><a class="panel-link" href="'+escHtml(child.link)+'" target="_blank" rel="noopener">&#8599; '+escHtml(child.link)+'</a>';
-    }
+    var linksHtml = '';
+    nodeLinks.forEach(function(url) {
+      var ytId = getYouTubeId(url);
+      if (ytId) {
+        linksHtml += '<div class="links-heading">Video</div><div class="panel-video-wrap"><iframe src="https://www.youtube.com/embed/'+ytId+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+      } else {
+        linksHtml += '<div class="links-heading">Link</div><a class="panel-link" href="'+escHtml(url)+'" target="_blank" rel="noopener">&#8599; '+escHtml(url)+'</a>';
+      }
+    });
+    linksEl.innerHTML = linksHtml;
   } else { linksEl.style.display = 'none'; }
+
+  ['panel-child-edit','panel-also-in','panel-admin-section'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.remove();
+  });
+
+  var panelEl = document.getElementById('panel');
+
+  var locations = findNodeLocations(resolved.id);
+  var otherLocs = locations.filter(function(pid) { return pid !== frame.id; });
+  if (otherLocs.length) {
+    var alsoDiv = document.createElement('div');
+    alsoDiv.id = 'panel-also-in';
+    alsoDiv.className = 'panel-also-in';
+    alsoDiv.innerHTML = 'Also in: <span>' + otherLocs.map(holonDisplayName).join(', ') + '</span>';
+    panelEl.appendChild(alsoDiv);
+  }
+
   if (ADMIN_MODE) {
+    var adminSec = document.createElement('div');
+    adminSec.id = 'panel-admin-section';
+    adminSec.className = 'panel-admin-section';
+
     var editBtn = document.createElement('button');
     editBtn.id = 'panel-child-edit';
     editBtn.textContent = '✏ Edit';
-    editBtn.style.cssText = 'margin:14px 22px 4px;padding:7px 18px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:18px;color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;';
+    editBtn.style.cssText = 'padding:7px 18px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:18px;color:rgba(255,255,255,0.6);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;align-self:flex-start;';
     editBtn.onclick = function() { openChildModal(frame, child); };
-    document.getElementById('panel').appendChild(editBtn);
+    adminSec.appendChild(editBtn);
+
+    var holonRow = document.createElement('div');
+    holonRow.className = 'panel-holon-row';
+    var sel = document.createElement('select');
+    sel.id = 'panel-holon-select';
+    PILLARS.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+    var addBtn = document.createElement('button');
+    addBtn.textContent = '+ Link into holon';
+    addBtn.onclick = doPanelLinkHolon;
+    holonRow.appendChild(sel); holonRow.appendChild(addBtn);
+    adminSec.appendChild(holonRow);
+
+    var feedback = document.createElement('div');
+    feedback.id = 'panel-link-feedback';
+    feedback.style.cssText = 'font-size:10px;min-height:14px;letter-spacing:0.5px;padding: 0 2px;';
+    adminSec.appendChild(feedback);
+
+    var rmBtn = document.createElement('button');
+    rmBtn.className = 'panel-remove-btn';
+    var isLink = !!child.refId;
+    var hasOtherLocs = locations.length > 1;
+    if (isLink) {
+      rmBtn.textContent = '✕ Remove link from this holon';
+    } else if (hasOtherLocs) {
+      rmBtn.textContent = '✕ Remove from this holon (linked copies remain)';
+    } else {
+      rmBtn.textContent = '✕ Delete node';
+      rmBtn.style.borderColor = 'rgba(255,60,60,0.5)';
+      rmBtn.style.color = 'rgba(255,80,80,0.85)';
+    }
+    rmBtn.onclick = doPanelRemove;
+    adminSec.appendChild(rmBtn);
+
+    panelEl.appendChild(adminSec);
   }
-  document.getElementById('panel').classList.add('open');
+
+  panelEl.classList.add('open');
 }
 
 var _cmp = null, _cme = null;
+var _panelFrame = null, _panelChild = null;
+
+function doPanelLinkHolon() {
+  var sel = document.getElementById('panel-holon-select');
+  if (!sel || !_panelChild || !_panelFrame) return;
+  var targetPid = sel.value;
+  var ok = linkNodeToHolon(_panelChild, targetPid);
+  var fb = document.getElementById('panel-link-feedback');
+  if (fb) {
+    fb.textContent = ok ? '✓ Linked into ' + holonDisplayName(targetPid) : 'Already linked there';
+    fb.style.color = ok ? 'rgba(16,185,129,0.85)' : 'rgba(255,200,80,0.7)';
+    setTimeout(function() { if (fb) fb.textContent = ''; }, 2500);
+  }
+  if (ok) showChildPanel(_panelFrame, _panelChild);
+}
+
+function doPanelRemove() {
+  if (!_panelFrame || !_panelChild) return;
+  removeNodeFromParent(_panelFrame.id, _panelChild);
+  closePanel();
+  var cd = currentDrill(); if (cd) renderChildMap(cd);
+}
 
 function openAddChildModal() {
   var frame = currentDrill();
@@ -1980,39 +2148,66 @@ function openAddChildModal() {
   document.getElementById('child-modal-heading').textContent = 'Add Theme — '+frame.name;
   document.getElementById('child-form-title').value = '';
   document.getElementById('child-form-body').value = '';
-  document.getElementById('child-form-link').value = '';
+  document.getElementById('child-form-links-container').innerHTML = '';
   document.getElementById('child-modal').classList.add('open');
   setTimeout(function(){ document.getElementById('child-form-title').focus(); }, 50);
 }
 
 function openChildModal(p, child) {
-  _cmp = p; _cme = child;
+  var resolved = resolveNode(child);
+  _cmp = p; _cme = resolved;
   closePanel();
   document.getElementById('child-modal-heading').textContent = 'Edit Theme';
-  document.getElementById('child-form-title').value = child.title||'';
-  document.getElementById('child-form-body').value = child.body||'';
-  document.getElementById('child-form-link').value = child.link||'';
+  document.getElementById('child-form-title').value = resolved.title||'';
+  document.getElementById('child-form-body').value = resolved.body||'';
+  var container = document.getElementById('child-form-links-container');
+  container.innerHTML = '';
+  getNodeLinks(resolved).forEach(function(l) { modalAddLink(l); });
   document.getElementById('child-modal').classList.add('open');
   setTimeout(function(){ document.getElementById('child-form-title').focus(); }, 50);
+}
+
+function modalAddLink(url) {
+  var container = document.getElementById('child-form-links-container');
+  var row = document.createElement('div');
+  row.className = 'modal-link-row';
+  var inp = document.createElement('input');
+  inp.type = 'url'; inp.placeholder = 'https://... or YouTube URL'; inp.autocomplete = 'off';
+  if (url) inp.value = url;
+  var rem = document.createElement('button');
+  rem.type = 'button'; rem.textContent = '✕';
+  rem.onclick = function() { row.remove(); };
+  row.appendChild(inp); row.appendChild(rem);
+  container.appendChild(row);
+  if (!url) setTimeout(function() { inp.focus(); }, 30);
+}
+
+function getModalLinks() {
+  return Array.from(document.querySelectorAll('#child-form-links-container input'))
+    .map(function(el) { return el.value.trim(); }).filter(Boolean);
 }
 
 function saveChildModal() {
   if (!_cmp) return;
   var title = document.getElementById('child-form-title').value.trim();
   if (!title) { document.getElementById('child-form-title').focus(); return; }
-  var pid = _cmp.id;
   var body = document.getElementById('child-form-body').value.trim();
-  var link = document.getElementById('child-form-link').value.trim();
-  if (!childData[pid]) childData[pid] = [];
+  var links = getModalLinks();
   if (_cme) {
-    var idx = childData[pid].findIndex(function(c) { return c.id === _cme.id; });
-    if (idx > -1) childData[pid][idx] = { id: _cme.id, title: title, body: body, link: link };
+    var saved = false;
+    Object.keys(childData).forEach(function(pid) {
+      if (saved) return;
+      var idx = childData[pid].findIndex(function(c) { return c.id === _cme.id && !c.refId; });
+      if (idx > -1) { childData[pid][idx] = { id: _cme.id, title: title, body: body, links: links }; saved = true; }
+    });
   } else {
-    childData[pid].push({ id: 'cn_'+Date.now(), title: title, body: body, link: link });
+    var pid = _cmp.id;
+    if (!childData[pid]) childData[pid] = [];
+    childData[pid].push({ id: 'cn_'+Date.now(), title: title, body: body, links: links });
   }
   saveChildren();
   document.getElementById('child-modal').classList.remove('open');
-  var cd = currentDrill(); if (cd && cd.id === pid) renderChildMap(cd);
+  var cd = currentDrill(); if (cd) renderChildMap(cd);
 }
 function cancelChildModal() {
   document.getElementById('child-modal').classList.remove('open');
@@ -2042,7 +2237,8 @@ document.getElementById('cs-info-btn').addEventListener('click', function(e) {
     <div class="child-modal-heading" id="child-modal-heading">Add Theme</div>
     <input id="child-form-title" type="text" placeholder="Title *" autocomplete="off">
     <textarea id="child-form-body" placeholder="Body text (optional)"></textarea>
-    <input id="child-form-link" type="url" placeholder="https://... (optional)" autocomplete="off">
+    <div id="child-form-links-container" style="display:flex;flex-direction:column;gap:6px;"></div>
+    <button type="button" onclick="modalAddLink()" style="align-self:flex-start;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);border-radius:12px;color:rgba(255,255,255,0.55);font-size:10px;font-weight:700;letter-spacing:1px;padding:5px 14px;cursor:pointer;font-family:inherit;margin-top:2px;">+ Add Link</button>
     <div class="child-modal-btns">
       <button id="child-modal-cancel" onclick="cancelChildModal()">Cancel</button>
       <button id="child-modal-save" onclick="saveChildModal()">Save</button>
