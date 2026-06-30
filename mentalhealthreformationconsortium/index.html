@@ -2067,10 +2067,10 @@ function renderChildMap(frame) {
     var isNamed = resolved.title && resolved.title !== 'Theme';
     var rCount = resonanceData[resolved.id] || 0;
     var baseShadow = '0 0 22px '+frame.glowColor+',0 0 50px '+frame.glowColor.replace('0.65','0.2');
-    if (isNamed) baseShadow += ',0 0 38px '+frame.glowColor.replace('0.65','0.45')+',0 0 70px '+frame.glowColor.replace('0.65','0.18');
+    if (isNamed) baseShadow += ',0 0 38px rgba(212,160,68,0.55),0 0 70px rgba(212,160,68,0.22),0 0 100px rgba(212,160,68,0.1)';
     if (rCount > 0) { var rBoost = Math.min(rCount * 8, 80); baseShadow += ',0 0 '+rBoost+'px rgba(255,255,255,0.22),0 0 '+(rBoost+30)+'px rgba(255,255,255,0.1)'; }
     node.style.boxShadow = baseShadow;
-    node.style.borderColor = isNamed ? lightenHex(frame.color, 0.65) : lightenHex(frame.color, 0.3);
+    node.style.borderColor = isNamed ? '#D4A044' : lightenHex(frame.color, 0.3);
     if (isNamed) node.style.borderWidth = '2.5px';
     node.innerHTML = '<div style=”color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.3;width:88px;text-transform:uppercase;letter-spacing:0.5px;word-break:break-word;overflow-wrap:break-word;text-shadow:0 1px 6px rgba(0,0,0,0.9);flex-shrink:0;”>'+(child.refId?'🔗 ':'')+escHtml(resolved.title)+'</div>';
     (function(c) {
