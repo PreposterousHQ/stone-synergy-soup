@@ -457,10 +457,6 @@ body {
 
 /* â”€â”€ Bottom button â”€â”€ */
 #btn-all {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  transform: none;
   padding: 12px 30px;
   background: linear-gradient(135deg, #6b2e0a 0%, #c4882a 50%, #D4A044 100%);
   color: #fff;
@@ -471,7 +467,6 @@ body {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
-  z-index: 300;
   box-shadow: 0 4px 28px rgba(212,160,68,0.5);
   transition: all 0.3s;
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -483,11 +478,7 @@ body {
 
 /* â”€â”€ Header â”€â”€ */
 #header {
-  position: fixed;
-  top: 20px; left: 22px;
-  transform: none;
   text-align: left;
-  z-index: 20;
   pointer-events: none;
 }
 #header h1 {
@@ -890,13 +881,19 @@ body {
   border-radius: 20px;
   pointer-events: none;
 }
+#bottom-right-bar {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 300;
+}
 </style>
 </head>
 <body>
 
-<div id="header">
-  <h1>Stone Synergy Soup</h1>
-</div>
 
 <div id="app">
   <svg id="svg-lines" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
@@ -956,7 +953,7 @@ body {
   <div id="all-content"></div>
 </div>
 
-<button id="btn-all">&#9776; View All Episodes</button>
+<div id="bottom-right-bar"><div id="header"><h1>Stone Synergy Soup</h1></div><button id="btn-all">&#9776; View All Episodes</button></div>
 
 <!-- â”€â”€ Pot modal â”€â”€ -->
 <div id="pot-modal">
@@ -1569,6 +1566,7 @@ renderPillars();
 </script>
 </body>
 </html>
+
 
 
 
