@@ -2686,15 +2686,11 @@ function setVizView(v) {
   vizView = v;
   document.querySelectorAll('.view-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.view === v); });
   var lbl = document.getElementById('view-label');
-  if (lbl) { var vn = {orbit:'Orbit',mycelium:'Mycelium',tide:'Tide',soup:'Stone Soup',sonar:'Sonar',depth:'Depth',novel:'Graphic Novel',wall:'Video Wall'}; lbl.textContent = vn[v] || v; }
+  if (lbl) { var vn = {orbit:'Orbit',mycelium:'Mycelium',novel:'Graphic Novel',wall:'Video Wall'}; lbl.textContent = vn[v] || v; }
   var app = document.getElementById('app');
   if (v === 'orbit') {
     app.style.opacity = ''; app.style.pointerEvents = '';
     VIZ_C.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;display:none;z-index:8;';
-  } else if (v === 'tide') {
-    app.style.opacity = ''; app.style.pointerEvents = '';
-    VIZ_C.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none;z-index:8;background:transparent;';
-    startTide();
   } else if (v === 'novel') {
     app.style.opacity = '0'; app.style.pointerEvents = 'none';
     VIZ_C.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;display:none;z-index:8;';
@@ -2712,9 +2708,6 @@ function setVizView(v) {
     VIZ_C.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;display:block;pointer-events:auto;z-index:8;background:#040412;';
     closePanel();
     if (v === 'mycelium') startMycelium();
-    else if (v === 'soup') startSoup();
-    else if (v === 'sonar') startSonar();
-    else if (v === 'depth') startDepth();
   }
 }
 
@@ -2881,325 +2874,9 @@ function startMycelium() {
 }
 
 // ============================================================
-// RESONANCE TIDE
+// (reserved for new visualizations)
 // ============================================================
-var TIDE_WAVES = [];
 
-function startTide() {
-  TIDE_WAVES = [];
-  var app = document.getElementById('app'), ar = app.getBoundingClientRect();
-  var sx = ar.width / 900, sy = ar.height / 810;
-  PILLARS.forEach(function(p) {
-    var count = resonanceData[p.id] || 0;
-    for (var i = 0; i < Math.min(count, 4); i++) {
-      TIDE_WAVES.push({ x: ar.left + p.x * sx, y: ar.top + p.y * sy, color: p.color, r: Math.random() * 60, maxR: 260 + Math.random() * 60, life: 1, speed: 1.1 + Math.random() * 0.5 });
-    }
-  });
-  function spawnTide() {
-    if (vizView !== 'tide') return;
-    var ar2 = document.getElementById('app').getBoundingClientRect(), sx2 = ar2.width / 900, sy2 = ar2.height / 810;
-    var srcs = PILLARS.filter(function(p) { return (resonanceData[p.id] || 0) > 0; });
-    if (!srcs.length) srcs = PILLARS;
-    var src = srcs[Math.floor(Math.random() * srcs.length)];
-    var cnt = resonanceData[src.id] || 0;
-    TIDE_WAVES.push({ x: ar2.left + src.x * sx2, y: ar2.top + src.y * sy2, color: src.color, r: 0, maxR: 180 + cnt * 14, life: 1, speed: 0.85 + Math.random() * 0.5 });
-    setTimeout(spawnTide, 700 + Math.random() * 1100);
-  }
-  setTimeout(spawnTide, 500);
-
-  function drawTide() {
-    if (vizView !== 'tide') return;
-    VIX.clearRect(0, 0, VIZ_C.width, VIZ_C.height);
-    for (var i = TIDE_WAVES.length - 1; i >= 0; i--) {
-      var w = TIDE_WAVES[i];
-      w.r += w.speed; w.life = 1 - w.r / w.maxR;
-      if (w.life <= 0) { TIDE_WAVES.splice(i, 1); continue; }
-      var c = hexRGB(w.color);
-      VIX.beginPath(); VIX.arc(w.x, w.y, w.r, 0, Math.PI * 2);
-      VIX.strokeStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + (w.life * 0.38) + ')';
-      VIX.lineWidth = 1.5 + w.life * 1.5; VIX.stroke();
-      if (w.r > 24) {
-        VIX.beginPath(); VIX.arc(w.x, w.y, w.r * 0.65, 0, Math.PI * 2);
-        VIX.strokeStyle = 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + (w.life * 0.14) + ')';
-        VIX.lineWidth = w.life * 4; VIX.stroke();
-      }
-    }
-    vizRAF = requestAnimationFrame(drawTide);
-  }
-  drawTide();
-}
-
-// ============================================================
-// STONE SOUP PARTICLES
-// ============================================================
-var SOUP_P = [], SOUP_FR = 0;
-
-function startSoup() {
-  SOUP_P = []; SOUP_FR = 0;
-
-  function spawnP(p, sx, sy, tx, ty) {
-    if (SOUP_P.length >= 240) return;
-    var ang = Math.atan2(ty - sy, tx - sx) + (Math.random() - 0.5) * 0.7;
-    var spd = 0.42 + Math.random() * 0.45;
-    SOUP_P.push({ x: sx + (Math.random() - 0.5) * 18, y: sy + (Math.random() - 0.5) * 18, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, color: p.color, r: 1.8 + Math.random() * 2.2, life: 1, decay: 0.003 + Math.random() * 0.002, pid: p.id });
-  }
-
-  function drawSoup() {
-    if (vizView !== 'soup') return;
-    var ctx = VIX, W = VIZ_C.width, H = VIZ_C.height, cx = W / 2, cy = H / 2 + 20;
-    ctx.fillStyle = 'rgba(4,4,18,0.18)'; ctx.fillRect(0, 0, W, H);
-    SOUP_FR++;
-
-    // Pot
-    ctx.save();
-    ctx.beginPath(); ctx.ellipse(cx, cy + 64, 92, 23, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(28,28,55,0.75)'; ctx.fill();
-    ctx.strokeStyle = 'rgba(212,160,68,0.5)'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx - 90, cy + 28); ctx.lineTo(cx - 74, cy + 64); ctx.lineTo(cx + 74, cy + 64); ctx.lineTo(cx + 90, cy + 28); ctx.closePath();
-    ctx.fillStyle = 'rgba(18,18,45,0.55)'; ctx.fill();
-    ctx.strokeStyle = 'rgba(212,160,68,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
-    var sg = ctx.createRadialGradient(cx, cy + 28, 8, cx, cy + 28, 86);
-    sg.addColorStop(0, 'rgba(212,160,68,0.18)'); sg.addColorStop(1, 'transparent');
-    ctx.beginPath(); ctx.ellipse(cx, cy + 28, 86, 21, 0, 0, Math.PI * 2); ctx.fillStyle = sg; ctx.fill();
-    ctx.restore();
-
-    // Episode nodes + spawn particles
-    PILLARS.forEach(function(p, i) {
-      var a = (2 * Math.PI / 6) * i - Math.PI / 2, px = cx + 240 * Math.cos(a), py = cy + 185 * Math.sin(a);
-      var rc = resonanceData[p.id] || 0;
-      var gg = ctx.createRadialGradient(px, py, 4, px, py, 34);
-      gg.addColorStop(0, hexA(p.color, 0.8)); gg.addColorStop(1, hexA(p.color, 0));
-      ctx.beginPath(); ctx.arc(px, py, 34, 0, Math.PI * 2); ctx.fillStyle = gg; ctx.fill();
-      ctx.beginPath(); ctx.arc(px, py, 19, 0, Math.PI * 2); ctx.fillStyle = hexA(p.color, 0.7); ctx.fill();
-      ctx.strokeStyle = rc > 0 ? '#D4A044' : hexA(p.color, 0.6); ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 8px "Segoe UI",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(p.name.split(' ').slice(-1)[0].substring(0, 9), px, py);
-      if (SOUP_FR % Math.max(7 - rc, 2) === i % Math.max(7 - rc, 2)) spawnP(p, px, py, cx, cy + 28);
-    });
-
-    // Particles
-    for (var pi = SOUP_P.length - 1; pi >= 0; pi--) {
-      var pt = SOUP_P[pi];
-      pt.x += pt.vx; pt.y += pt.vy; pt.life -= pt.decay;
-      var ddx = cx - pt.x, ddy = (cy + 28) - pt.y, dd = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
-      pt.vx += ddx / dd * 0.025; pt.vy += ddy / dd * 0.025;
-      if (dd < 55) { pt.vx *= 0.95; pt.vy *= 0.95; }
-      if (pt.life <= 0 || dd < 14) { SOUP_P.splice(pi, 1); continue; }
-      ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.r * pt.life, 0, Math.PI * 2);
-      ctx.fillStyle = hexA(pt.color, pt.life * 0.72); ctx.fill();
-    }
-
-    ctx.fillStyle = 'rgba(212,160,68,0.45)'; ctx.font = 'bold 11px "Segoe UI",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('STONE SYNERGY SOUP', cx, cy - 8);
-    ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.font = '8px "Segoe UI",sans-serif';
-    ctx.fillText('Mental Health Reformation Consortium', cx, cy + 6);
-    vizRAF = requestAnimationFrame(drawSoup);
-  }
-
-  // Seed initial particles
-  PILLARS.forEach(function(p, i) {
-    var a = (2 * Math.PI / 6) * i - Math.PI / 2;
-    var cx = VIZ_C.width / 2, cy = VIZ_C.height / 2 + 20;
-    var px = cx + 240 * Math.cos(a), py = cy + 185 * Math.sin(a);
-    for (var k = 0; k < 4 + (resonanceData[p.id] || 0); k++) spawnP(p, px, py, cx, cy + 28);
-  });
-  drawSoup();
-}
-
-// ============================================================
-// SONAR VIEW
-// ============================================================
-var SONAR_BLIPS = [], SONAR_SWEEP = 0;
-
-function startSonar() {
-  SONAR_BLIPS = []; SONAR_SWEEP = 0;
-  var W = VIZ_C.width, H = VIZ_C.height, cx = W / 2, cy = H / 2;
-  var maxR = Math.min(cx, cy) * 0.9;
-  var nodes = buildVizNodes();
-  var depG = {};
-  nodes.forEach(function(n) { if (!depG[n.depth]) depG[n.depth] = []; depG[n.depth].push(n); });
-
-  nodes.forEach(function(n) {
-    var grp = depG[n.depth], idx = grp.indexOf(n), gn = grp.length || 1;
-    var baseA;
-    if (n.type === 'pillar') {
-      baseA = (2 * Math.PI / 6) * idx - Math.PI / 2;
-    } else {
-      var par = null; nodes.forEach(function(m) { if (m.id === n.parentId) par = m; });
-      var parA = par ? Math.atan2(par._sy - cy, par._sx - cx) : Math.random() * Math.PI * 2;
-      baseA = parA + (idx / gn - 0.5) * 0.55;
-    }
-    var rad = n.type === 'pillar' ? maxR * 0.38 : maxR * (0.38 + n.depth * 0.19);
-    n._sx = cx + rad * Math.cos(baseA); n._sy = cy + rad * Math.sin(baseA);
-    SONAR_BLIPS.push({ id: n.id, x: n._sx, y: n._sy, color: n.color, resonance: n.resonance, name: n.name, lit: 0, type: n.type });
-  });
-
-  function drawSonar() {
-    if (vizView !== 'sonar') return;
-    var ctx = VIX, W2 = VIZ_C.width, H2 = VIZ_C.height, cx2 = W2 / 2, cy2 = H2 / 2;
-    ctx.fillStyle = 'rgba(0,8,4,0.86)'; ctx.fillRect(0, 0, W2, H2);
-    SONAR_SWEEP += 0.009;
-
-    // Depth rings
-    [0.19, 0.38, 0.57, 0.76, 0.9].forEach(function(f) {
-      ctx.beginPath(); ctx.arc(cx2, cy2, maxR * f, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0,180,80,0.1)'; ctx.lineWidth = 1; ctx.stroke();
-    });
-    ctx.strokeStyle = 'rgba(0,180,80,0.08)'; ctx.lineWidth = 0.5;
-    ctx.beginPath(); ctx.moveTo(cx2 - maxR, cy2); ctx.lineTo(cx2 + maxR, cy2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx2, cy2 - maxR); ctx.lineTo(cx2, cy2 + maxR); ctx.stroke();
-
-    // Sweep wedge
-    ctx.save(); ctx.translate(cx2, cy2);
-    var R2 = Math.max(W2, H2);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R2, SONAR_SWEEP - 0.55, SONAR_SWEEP, false); ctx.closePath();
-    var swg = ctx.createLinearGradient(0, 0, R2 * Math.cos(SONAR_SWEEP), R2 * Math.sin(SONAR_SWEEP));
-    swg.addColorStop(0, 'rgba(0,255,80,0)'); swg.addColorStop(1, 'rgba(0,255,80,0.09)');
-    ctx.fillStyle = swg; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(R2 * Math.cos(SONAR_SWEEP), R2 * Math.sin(SONAR_SWEEP));
-    ctx.strokeStyle = 'rgba(0,255,80,0.65)'; ctx.lineWidth = 1.5; ctx.stroke();
-    ctx.restore();
-
-    // Blips
-    SONAR_BLIPS.forEach(function(b) {
-      var bA = Math.atan2(b.y - cy2, b.x - cx2);
-      var diff = ((SONAR_SWEEP - bA) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-      if (diff < 0.07) b.lit = 1 + (b.resonance || 0) * 0.18;
-      else b.lit *= 0.975;
-      if (b.lit < 0.01) return;
-      var gl = Math.min(b.lit, 1.4);
-      ctx.beginPath(); ctx.arc(b.x, b.y, (b.type === 'pillar' ? 9 : 5) + (b.resonance || 0), 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,255,80,' + (gl * 0.7) + ')'; ctx.fill();
-      ctx.strokeStyle = 'rgba(0,255,80,' + (gl * 0.9) + ')'; ctx.lineWidth = 1; ctx.stroke();
-      if (b.resonance > 0) {
-        ctx.beginPath(); ctx.arc(b.x, b.y, 18 + b.resonance * 4, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,255,80,' + (gl * 0.22) + ')'; ctx.lineWidth = 1; ctx.stroke();
-      }
-      if (gl > 0.28) {
-        ctx.fillStyle = 'rgba(0,255,80,' + (gl * 0.8) + ')';
-        ctx.font = 'bold ' + (b.type === 'pillar' ? 9 : 7) + 'px monospace';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        ctx.fillText(b.name.substring(0, 14), b.x, b.y + (b.type === 'pillar' ? 12 : 8));
-      }
-    });
-    ctx.beginPath(); ctx.arc(cx2, cy2, 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,255,80,0.9)'; ctx.fill();
-    vizRAF = requestAnimationFrame(drawSonar);
-  }
-  drawSonar();
-
-  VIZ_C.onclick = function(e) {
-    var rect = VIZ_C.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    SONAR_BLIPS.forEach(function(b) {
-      if (b.lit < 0.12) return;
-      var dx = mx - b.x, dy = my - b.y;
-      if (Math.sqrt(dx * dx + dy * dy) < 22 + (b.resonance || 0)) vizShowPanel(b);
-    });
-  };
-}
-
-// ============================================================
-// DEPTH MAP
-// ============================================================
-function startDepth() {
-  var W = VIZ_C.width, H = VIZ_C.height, cx = W / 2, cy = H / 2;
-  var nodes = buildVizNodes();
-  var edges = buildVizEdges(nodes.map(function(n) { return n.id; }));
-
-  // Map each node to a pillar angle
-  var pillarAngleMap = {};
-  PILLARS.forEach(function(p, i) { pillarAngleMap[p.id] = (2 * Math.PI / 6) * i - Math.PI / 2; });
-  function getPAngle(id) {
-    if (pillarAngleMap[id] !== undefined) return pillarAngleMap[id];
-    var found = null;
-    function search(pid, a) { if (found !== null) return; (childData[pid] || []).forEach(function(c) { var cid = c.refId || c.id; if (cid === id) { found = a; return; } search(cid, a); }); }
-    PILLARS.forEach(function(p) { search(p.id, pillarAngleMap[p.id]); });
-    return found !== null ? found : 0;
-  }
-
-  var radii = [0, 160, 275, 370];
-  var depGroups = {};
-  nodes.forEach(function(n) { if (!depGroups[n.depth]) depGroups[n.depth] = []; depGroups[n.depth].push(n); });
-  nodes.forEach(function(n) {
-    var dep = Math.min(n.depth, 3);
-    var grp = depGroups[dep] || [n], si = grp.indexOf(n), sn = grp.length || 1;
-    var colorGrp = grp.filter(function(m) { return m.color === n.color; });
-    var ci = colorGrp.indexOf(n), cn = colorGrp.length || 1;
-    var pilA = getPAngle(n.id);
-    var spread = dep === 0 ? 0 : (Math.PI * 2 / 6) * 0.68;
-    var a = dep === 0 ? pilA : pilA + (cn > 1 ? (ci / (cn - 1) - 0.5) * spread : 0);
-    var rad = (radii[dep] || 370 + (dep - 3) * 60);
-    n._x = cx + rad * Math.cos(a); n._y = cy + rad * Math.sin(a);
-    n._r = n.type === 'pillar' ? 28 : 11 + Math.min((n.resonance || 0) * 3, 10);
-  });
-
-  var animT = 0;
-  function drawDepth() {
-    if (vizView !== 'depth') return;
-    animT = Math.min(animT + 0.022, 1);
-    var ctx = VIX, W2 = VIZ_C.width, H2 = VIZ_C.height, cx2 = W2 / 2, cy2 = H2 / 2;
-    ctx.fillStyle = '#040412'; ctx.fillRect(0, 0, W2, H2);
-
-    // Pillar wedge backgrounds
-    PILLARS.forEach(function(p, i) {
-      var a1 = (2 * Math.PI / 6) * i - Math.PI / 2 - Math.PI / 6, a2 = a1 + Math.PI / 3;
-      var wg = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, Math.min(cx2, cy2) * 0.94);
-      wg.addColorStop(0, hexA(p.color, 0)); wg.addColorStop(0.28, hexA(p.color, 0.04)); wg.addColorStop(1, hexA(p.color, 0.09));
-      ctx.beginPath(); ctx.moveTo(cx2, cy2); ctx.arc(cx2, cy2, Math.min(cx2, cy2) * 0.94, a1, a2); ctx.closePath();
-      ctx.fillStyle = wg; ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx2, cy2); ctx.arc(cx2, cy2, Math.min(cx2, cy2) * 0.94, a1, a2); ctx.strokeStyle = hexA(p.color, 0.1); ctx.lineWidth = 0.5; ctx.stroke();
-    });
-    radii.forEach(function(r) {
-      if (!r) return;
-      ctx.beginPath(); ctx.arc(cx2, cy2, r, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1; ctx.stroke();
-    });
-
-    var nm = {}; nodes.forEach(function(n) { nm[n.id] = n; });
-    edges.forEach(function(e) {
-      var a = nm[e.from], b = nm[e.to]; if (!a || !b) return;
-      var ax2 = cx2 + (a._x - cx2) * animT, ay2 = cy2 + (a._y - cy2) * animT;
-      var bx2 = cx2 + (b._x - cx2) * animT, by2 = cy2 + (b._y - cy2) * animT;
-      ctx.beginPath(); ctx.moveTo(ax2, ay2); ctx.lineTo(bx2, by2);
-      if (e.isLink) { ctx.setLineDash([3, 5]); ctx.strokeStyle = 'rgba(212,160,68,0.2)'; ctx.lineWidth = 0.8; }
-      else { ctx.setLineDash([]); ctx.globalAlpha = 0.14; ctx.strokeStyle = a.color; ctx.lineWidth = 0.8; }
-      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
-    });
-    nodes.forEach(function(n) {
-      var nx = cx2 + (n._x - cx2) * animT, ny = cy2 + (n._y - cy2) * animT, r2 = n._r;
-      var hg = ctx.createRadialGradient(nx, ny, r2 * 0.3, nx, ny, r2 + 14 + (n.resonance || 0) * 4);
-      hg.addColorStop(0, hexA(n.color, n.type === 'pillar' ? 0.38 : 0.18)); hg.addColorStop(1, hexA(n.color, 0));
-      ctx.beginPath(); ctx.arc(nx, ny, r2 + 14 + (n.resonance || 0) * 4, 0, Math.PI * 2); ctx.fillStyle = hg; ctx.fill();
-      var fg2 = ctx.createRadialGradient(nx - r2 * 0.3, ny - r2 * 0.3, 0, nx, ny, r2);
-      fg2.addColorStop(0, hexA(n.color, 0.95)); fg2.addColorStop(1, hexA(n.color, 0.7));
-      ctx.beginPath(); ctx.arc(nx, ny, r2, 0, Math.PI * 2); ctx.fillStyle = fg2; ctx.fill();
-      ctx.strokeStyle = (n.resonance || 0) > 0 ? '#D4A044' : hexA(n.color, 0.6); ctx.lineWidth = (n.resonance || 0) > 0 ? 2 : 0.8; ctx.stroke();
-      var isNm2 = n.name && !/^(theme|node)\s*\d*$/i.test(n.name.trim());
-      if (n.type === 'pillar' || isNm2) {
-        ctx.fillStyle = n.type === 'pillar' ? '#fff' : 'rgba(255,255,255,0.6)';
-        ctx.font = 'bold ' + (n.type === 'pillar' ? 9 : 7) + 'px "Segoe UI",sans-serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(n.name.substring(0, 14), nx, ny);
-      }
-    });
-    if (animT < 1) vizRAF = requestAnimationFrame(drawDepth);
-
-    if (!VIZ_C._depthHandled) {
-      VIZ_C._depthHandled = true;
-      VIZ_C.onclick = function(e) {
-        var rect = VIZ_C.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        var cx3 = VIZ_C.width / 2, cy3 = VIZ_C.height / 2;
-        nodes.forEach(function(n) {
-          var nx = cx3 + (n._x - cx3) * animT, ny = cy3 + (n._y - cy3) * animT;
-          var dx = mx - nx, dy = my - ny;
-          if (Math.sqrt(dx * dx + dy * dy) < n._r + 8) vizShowPanel(n);
-        });
-      };
-    }
-  }
-  VIZ_C._depthHandled = false;
-  drawDepth();
-}
 
 function toggleActInfo() {
   var panel = document.getElementById('act-info-panel');
@@ -3450,7 +3127,7 @@ window.addEventListener('load', function() {
     <div id="act-clapper-top"></div>
     <div class="act-field">
       <div class="act-field-label">Production</div>
-      <div class="act-field-val" id="act-field-prod">A Civil Rights Moviement for the Soul</div>
+      <div class="act-field-val" id="act-field-prod">I Have A Team</div>
     </div>
     <div class="act-field-rule"></div>
     <div class="act-field">
@@ -3471,10 +3148,6 @@ window.addEventListener('load', function() {
     <div id="view-label">Orbit</div>
     <button class="view-btn active" data-view="orbit" title="Orbit — holonic map" onclick="setVizView('orbit')">&#9737;</button>
     <button class="view-btn" data-view="mycelium" title="Mycelium Web — force graph" onclick="setVizView('mycelium')">&#9901;</button>
-    <button class="view-btn" data-view="tide" title="Resonance Tide — wave overlay" onclick="setVizView('tide')">&#8776;</button>
-    <button class="view-btn" data-view="soup" title="Stone Soup — particle flow" onclick="setVizView('soup')">&#9675;</button>
-    <button class="view-btn" data-view="sonar" title="Sonar — radar view" onclick="setVizView('sonar')">&#9685;</button>
-    <button class="view-btn" data-view="depth" title="Depth Map — radial layers" onclick="setVizView('depth')">&#9636;</button>
     <div class="tray-divider"></div>
     <button id="yt-btn" class="view-btn" title="YouTube — search &amp; embed" onclick="toggleYT()">&#9654;</button>
     <div class="tray-divider"></div>
