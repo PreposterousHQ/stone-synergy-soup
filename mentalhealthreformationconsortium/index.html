@@ -1695,8 +1695,31 @@ function openProfileModal(p) {
 }
 
 document.getElementById('center').addEventListener('click', function() {
-  closePanel();
-  openPotModal();
+  var drill = currentDrill();
+  if (!drill) {
+    // Stone Synergy Soup Holon — add ingredient
+    closePanel();
+    openPotModal();
+    return;
+  }
+  if (drillStack.length === 1) {
+    // Home Holon is the center — open its panel
+    var pillar = null;
+    for (var _pi = 0; _pi < PILLARS.length; _pi++) {
+      if (PILLARS[_pi].id === drill.id) { pillar = PILLARS[_pi]; break; }
+    }
+    if (pillar) { openPanel(pillar); }
+    return;
+  }
+  // Child Holon (depth >= 2) is the center — show its panel
+  var parentFrame = drillStack[drillStack.length - 2];
+  var siblings = childData[parentFrame.id] || [];
+  var centerChild = null;
+  for (var _ci = 0; _ci < siblings.length; _ci++) {
+    var _c = siblings[_ci];
+    if ((_c.refId || _c.id) === drill.id) { centerChild = _c; break; }
+  }
+  if (centerChild) { showChildPanel(parentFrame, centerChild); }
 });
 
 
