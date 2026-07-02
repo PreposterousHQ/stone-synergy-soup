@@ -1491,7 +1491,7 @@ function openPanel(p) {
     linksEl.style.display = 'none';
   }
 
-  ['panel-child-edit','panel-also-in','panel-admin-section','panel-resonate-wrap','panel-readmore'].forEach(function(id) {
+  ['panel-child-edit','panel-also-in','panel-admin-section','panel-resonate-wrap','panel-readmore','panel-profile-back'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.remove();
   });
   var pEl = document.getElementById('panel');
@@ -1548,9 +1548,34 @@ function closePanel() {
 }
 
 function openProfileModal(p) {
-  document.getElementById('story-modal-title').textContent = p.name;
-  document.getElementById('story-modal-body').innerHTML = p.full || '';
-  document.getElementById('story-modal').classList.add('open');
+  var panelEl = document.getElementById('panel');
+
+  // Swap bullet list for full-profile paragraphs
+  var list = document.getElementById('panel-list');
+  list.innerHTML = '';
+  var profileDiv = document.createElement('div');
+  profileDiv.style.cssText = 'color:rgba(255,255,255,0.82);font-size:13px;line-height:1.75;display:flex;flex-direction:column;gap:13px;';
+  profileDiv.innerHTML = p.full || '';
+  profileDiv.querySelectorAll('p').forEach(function(para) { para.style.margin = '0'; });
+  list.appendChild(profileDiv);
+
+  // Hide summary-only elements
+  document.getElementById('panel-links').style.display = 'none';
+  var rm = document.getElementById('panel-readmore'); if (rm) rm.style.display = 'none';
+  var rw = document.getElementById('panel-resonate-wrap'); if (rw) rw.style.display = 'none';
+
+  // Back-to-summary link
+  var backDiv = document.createElement('div');
+  backDiv.id = 'panel-profile-back';
+  backDiv.style.cssText = 'text-align:center;margin-top:14px;';
+  var backA = document.createElement('a');
+  backA.href = '#';
+  backA.className = 'panel-link';
+  backA.style.fontSize = '12px';
+  backA.textContent = '← Back to summary';
+  (function(pp) { backA.onclick = function(e) { e.preventDefault(); openPanel(pp); }; })(p);
+  backDiv.appendChild(backA);
+  panelEl.appendChild(backDiv);
 }
 
 document.getElementById('center').addEventListener('click', function() {
