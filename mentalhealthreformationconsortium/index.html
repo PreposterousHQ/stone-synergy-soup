@@ -436,6 +436,13 @@ body {
 #spotify-btn { color: #1DB954 !important; border-color: rgba(29,185,84,0.4) !important; }
 #spotify-btn.open { background: rgba(29,185,84,0.14) !important; border-color: rgba(29,185,84,0.8) !important; box-shadow: 0 0 12px rgba(29,185,84,0.3) !important; }
 .tray-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
+#view-tray-inner { display: flex; flex-direction: row; gap: 5px; align-items: center; overflow: hidden; max-width: 600px; opacity: 1; transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s; }
+#view-tray-inner.collapsed { max-width: 0; opacity: 0; pointer-events: none; }
+#tray-toggle { font-size: 17px; line-height: 1; color: rgba(255,255,255,0.32) !important; border-color: rgba(255,255,255,0.08) !important; background: none !important; flex-shrink: 0; }
+#tray-toggle:hover { color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.28) !important; box-shadow: none !important; transform: none !important; }
+.act-tab { height: 28px; padding: 0 9px; border-radius: 14px; background: none; border: 1.5px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.38); font-size: 9px; font-weight: 800; letter-spacing: 1.5px; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all 0.18s; flex-shrink: 0; }
+.act-tab:hover { border-color: rgba(212,160,68,0.5); color: rgba(212,160,68,0.8); }
+.act-tab.active { border-color: rgba(212,160,68,0.85); color: rgba(212,160,68,1); background: rgba(212,160,68,0.13); }
 .panel-link-inline:hover {
   color: rgba(180,210,255,1);
   text-decoration: underline;
@@ -1382,6 +1389,15 @@ var PILLARS = [
     links: []
   }
 ];
+
+var _AC = '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="13" width="28" height="17" rx="2" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.12)"/><rect x="3" y="5" width="28" height="9" rx="1.5" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.22)"/><line x1="10" y1="5" x2="13" y2="14" stroke="white" stroke-width="2.5"/><line x1="18" y1="5" x2="21" y2="14" stroke="white" stroke-width="2.5"/><line x1="26" y1="5" x2="29" y2="14" stroke="white" stroke-width="2.5"/></svg>';
+var _AA = [-90,-60,-30,0,30,60,90,120,150,180,210,240];
+var ACTS_DATA = [
+  PILLARS,
+  _AA.map(function(ang,i){var n=i+13;return{id:'ep'+n,name:'Episode '+n,label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">ACT II</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Episode '+n+'</span>',icon:_AC,color:'#4B6483',glowColor:'rgba(75,100,131,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};}),
+  _AA.map(function(ang,i){var n=i+25;return{id:'ep'+n,name:'Episode '+n,label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">ACT III</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Episode '+n+'</span>',icon:_AC,color:'#5C4B73',glowColor:'rgba(92,75,115,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};})
+];
+var currentAct = 0;
 
 var CX = 450, CY = 405, ORBIT = 295, CTR_R = 104, PLR_R = 72;
 
@@ -3168,6 +3184,28 @@ function startDepth() {
   drawDepth();
 }
 
+function toggleVizTray() {
+  var inner = document.getElementById('view-tray-inner');
+  var btn = document.getElementById('tray-toggle');
+  var collapsed = inner.classList.toggle('collapsed');
+  btn.innerHTML = collapsed ? '&#8250;' : '&#8249;';
+}
+
+function setAct(idx) {
+  if (idx === currentAct) return;
+  currentAct = idx;
+  document.querySelectorAll('.act-tab').forEach(function(b, i) { b.classList.toggle('active', i === idx); });
+  closePanel();
+  document.querySelectorAll('.pillar, .pillar-resonate-ring').forEach(function(el) { el.remove(); });
+  var svg = document.getElementById('svg-lines');
+  Array.prototype.slice.call(svg.childNodes).forEach(function(n) { if (n.tagName && n.tagName.toLowerCase() !== 'defs') svg.removeChild(n); });
+  PILLARS = ACTS_DATA[idx];
+  PILLARS.forEach(function(p) { var r = p.angle * Math.PI / 180; p.x = CX + ORBIT * Math.cos(r); p.y = CY + ORBIT * Math.sin(r); });
+  drawLines();
+  renderPillars();
+  renderPillarRings();
+}
+
 function toggleSpotify() {
   var player = document.getElementById('spotify-player');
   var btn = document.getElementById('spotify-btn');
@@ -3381,19 +3419,27 @@ window.addEventListener('load', function() {
 </div>
 <div id="view-tray">
   <button id="spotify-btn" class="view-btn" title="Stone Synergy Soup playlist" onclick="toggleSpotify()" style="display:none;">&#9835;</button>
-  <div class="tray-divider" id="spotify-divider" style="display:none;"></div>
-  <div id="view-label">Orbit</div>
-  <button class="view-btn active" data-view="orbit" title="Orbit — holonic map" onclick="setVizView('orbit')">&#9737;</button>
-  <button class="view-btn" data-view="mycelium" title="Mycelium Web — force graph" onclick="setVizView('mycelium')">&#9901;</button>
-  <button class="view-btn" data-view="tide" title="Resonance Tide — wave overlay" onclick="setVizView('tide')">&#8776;</button>
-  <button class="view-btn" data-view="soup" title="Stone Soup — particle flow" onclick="setVizView('soup')">&#9675;</button>
-  <button class="view-btn" data-view="sonar" title="Sonar — radar view" onclick="setVizView('sonar')">&#9685;</button>
-  <button class="view-btn" data-view="depth" title="Depth Map — radial layers" onclick="setVizView('depth')">&#9636;</button>
-  <div class="tray-divider"></div>
-  <button id="yt-btn" class="view-btn" title="YouTube — search &amp; embed" onclick="toggleYT()">&#9654;</button>
-  <div class="tray-divider"></div>
-  <button class="view-btn" data-view="novel" title="Graphic Novel — panel view" onclick="setVizView('novel')" style="font-size:13px;">&#9635;</button>
-  <button class="view-btn" data-view="wall" title="Video Wall — all videos" onclick="setVizView('wall')" style="font-size:13px;">&#10697;</button>
+  <div id="view-tray-inner">
+    <div class="tray-divider" id="spotify-divider" style="display:none;"></div>
+    <div id="view-label">Orbit</div>
+    <button class="view-btn active" data-view="orbit" title="Orbit — holonic map" onclick="setVizView('orbit')">&#9737;</button>
+    <button class="view-btn" data-view="mycelium" title="Mycelium Web — force graph" onclick="setVizView('mycelium')">&#9901;</button>
+    <button class="view-btn" data-view="tide" title="Resonance Tide — wave overlay" onclick="setVizView('tide')">&#8776;</button>
+    <button class="view-btn" data-view="soup" title="Stone Soup — particle flow" onclick="setVizView('soup')">&#9675;</button>
+    <button class="view-btn" data-view="sonar" title="Sonar — radar view" onclick="setVizView('sonar')">&#9685;</button>
+    <button class="view-btn" data-view="depth" title="Depth Map — radial layers" onclick="setVizView('depth')">&#9636;</button>
+    <div class="tray-divider"></div>
+    <button id="yt-btn" class="view-btn" title="YouTube — search &amp; embed" onclick="toggleYT()">&#9654;</button>
+    <div class="tray-divider"></div>
+    <button class="view-btn" data-view="novel" title="Graphic Novel — panel view" onclick="setVizView('novel')" style="font-size:13px;">&#9635;</button>
+    <button class="view-btn" data-view="wall" title="Video Wall — all videos" onclick="setVizView('wall')" style="font-size:13px;">&#10697;</button>
+    <div class="tray-divider"></div>
+    <span style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.22);padding:0 2px;pointer-events:none;">Act</span>
+    <button class="act-tab active" id="act-btn-0" onclick="setAct(0)">I</button>
+    <button class="act-tab" id="act-btn-1" onclick="setAct(1)">II</button>
+    <button class="act-tab" id="act-btn-2" onclick="setAct(2)">III</button>
+  </div>
+  <button id="tray-toggle" class="view-btn" onclick="toggleVizTray()" title="Show/hide visualizations">&#8249;</button>
 </div>
 <button id="back-btn" onclick="drillOut()" style="display:none;position:fixed;top:22px;right:22px;z-index:300;background:rgba(10,10,28,0.88);border:1px solid rgba(255,255,255,0.22);border-radius:22px;color:rgba(255,255,255,0.8);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;padding:9px 20px;font-family:inherit;backdrop-filter:blur(8px);">&#8592; Back</button>
 <button id="undo-btn" onclick="undoChildData()" style="display:none;position:fixed;top:70px;right:22px;z-index:300;background:rgba(10,10,28,0.88);border:1px solid rgba(255,160,60,0.4);border-radius:22px;color:rgba(255,180,80,0.85);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;padding:9px 20px;font-family:inherit;backdrop-filter:blur(8px);">&#8630; Undo</button>
