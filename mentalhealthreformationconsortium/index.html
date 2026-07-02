@@ -410,6 +410,18 @@ body {
 .wall-tile-title { font-size:10px;font-weight:700;color:rgba(255,255,255,0.75);line-height:1.4;margin-bottom:3px; }
 .wall-tile-source { font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:0.5px; }
 .wall-empty { display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;color:rgba(255,255,255,0.25);font-size:12px;text-align:center;line-height:1.7; }
+/* === ACT INFO CLAPBOARD === */
+#act-info-panel { position: fixed; top: 22px; right: 22px; z-index: 299; display: flex; flex-direction: row; align-items: flex-start; }
+#act-info-toggle { width: 26px; min-height: 52px; background: rgba(6,6,18,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-right: none; border-radius: 10px 0 0 10px; color: rgba(255,255,255,0.4); font-size: 10px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-family: inherit; transition: color 0.18s, border-color 0.18s; }
+#act-info-toggle:hover { color: rgba(255,255,255,0.8); }
+#act-info-panel.collapsed #act-info-toggle { border-right: 1px solid rgba(255,255,255,0.15); border-radius: 10px; }
+#act-info-inner { width: 210px; background: rgba(6,6,18,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-left: none; border-radius: 0 10px 10px 0; overflow: hidden; max-width: 210px; transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1); }
+#act-info-panel.collapsed #act-info-inner { max-width: 0; border: none; }
+#act-clapper-top { height: 30px; background: repeating-linear-gradient(-45deg, #0a0a16 0px, #0a0a16 9px, rgba(212,160,68,0.85) 9px, rgba(212,160,68,0.85) 18px); border-bottom: 2px solid rgba(255,255,255,0.12); }
+.act-field { padding: 7px 12px; }
+.act-field-label { font-size: 7px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 3px; font-family: 'Segoe UI',sans-serif; white-space: nowrap; }
+.act-field-val { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.82); line-height: 1.35; font-family: 'Segoe UI',sans-serif; white-space: normal; }
+.act-field-rule { height: 1px; background: rgba(255,255,255,0.09); margin: 0 12px; }
 /* === VIEW TRAY === */
 #view-tray { position: fixed; bottom: 20px; right: 20px; z-index: 450; display: flex; flex-direction: row; gap: 5px; align-items: center; background: rgba(6,6,18,0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 32px; padding: 5px 8px; }
 .view-btn { width: 36px; height: 36px; border-radius: 50%; background: none; border: 1.5px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.5); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; padding: 0; font-family: inherit; flex-shrink: 0; }
@@ -1394,10 +1406,15 @@ var _AC = '<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="ht
 var _AA = [-90,-60,-30,0,30,60,90,120,150,180,210,240];
 var ACTS_DATA = [
   PILLARS,
-  _AA.map(function(ang,i){var n=i+13;return{id:'ep'+n,name:'Episode '+n,label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">ACT II</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Episode '+n+'</span>',icon:_AC,color:'#4B6483',glowColor:'rgba(75,100,131,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};}),
-  _AA.map(function(ang,i){var n=i+25;return{id:'ep'+n,name:'Episode '+n,label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">ACT III</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Episode '+n+'</span>',icon:_AC,color:'#5C4B73',glowColor:'rgba(92,75,115,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};})
+  _AA.map(function(ang,i){return{id:'ep2-'+(i+1),name:'Coming Soon',label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">EPISODE</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Coming Soon</span>',icon:_AC,color:'#4B6483',glowColor:'rgba(75,100,131,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};}),
+  _AA.map(function(ang,i){return{id:'ep3-'+(i+1),name:'Coming Soon',label:'<span style="display:block;font-size:16px;font-weight:800;line-height:1;letter-spacing:0.05em;margin-bottom:2px">EPISODE</span><span style="display:block;font-size:11px;font-weight:700;text-transform:none;line-height:1.2">Coming Soon</span>',icon:_AC,color:'#5C4B73',glowColor:'rgba(92,75,115,0.5)',angle:ang,bullets:['— Coming soon —'],links:[]};})
 ];
 var currentAct = 0;
+var ACTS_INFO = [
+  { act: 'ACT I: Unbreakable Spirit', title: 'Stone Synergy Soup' },
+  { act: 'ACT II: Coming Soon',       title: 'Stone Synergy Soup' },
+  { act: 'ACT III: Coming Soon',      title: 'Stone Synergy Soup' }
+];
 
 var CX = 450, CY = 405, ORBIT = 295, CTR_R = 104, PLR_R = 72;
 
@@ -3184,6 +3201,13 @@ function startDepth() {
   drawDepth();
 }
 
+function toggleActInfo() {
+  var panel = document.getElementById('act-info-panel');
+  var btn = document.getElementById('act-info-toggle');
+  var collapsed = panel.classList.toggle('collapsed');
+  btn.innerHTML = collapsed ? '&#8250;' : '&#8249;';
+}
+
 function toggleVizTray() {
   var inner = document.getElementById('view-tray-inner');
   var btn = document.getElementById('tray-toggle');
@@ -3204,6 +3228,9 @@ function setAct(idx) {
   drawLines();
   renderPillars();
   renderPillarRings();
+  var info = ACTS_INFO[idx];
+  document.getElementById('act-field-act').textContent = info.act;
+  document.getElementById('act-field-title').textContent = info.title;
 }
 
 function toggleSpotify() {
@@ -3415,6 +3442,26 @@ window.addEventListener('load', function() {
   <div id="yt-footer">
     <button id="yt-add-btn" onclick="ytAddToHolon()">+ Add to Holon</button>
     <span id="yt-hint">drill into a holon first</span>
+  </div>
+</div>
+<div id="act-info-panel">
+  <button id="act-info-toggle" onclick="toggleActInfo()" title="Toggle act info">&#8249;</button>
+  <div id="act-info-inner">
+    <div id="act-clapper-top"></div>
+    <div class="act-field">
+      <div class="act-field-label">Production</div>
+      <div class="act-field-val" id="act-field-prod">A Civil Rights Moviement for the Soul</div>
+    </div>
+    <div class="act-field-rule"></div>
+    <div class="act-field">
+      <div class="act-field-label">Act</div>
+      <div class="act-field-val" id="act-field-act">ACT I: Unbreakable Spirit</div>
+    </div>
+    <div class="act-field-rule"></div>
+    <div class="act-field">
+      <div class="act-field-label">Title</div>
+      <div class="act-field-val" id="act-field-title">Stone Synergy Soup</div>
+    </div>
   </div>
 </div>
 <div id="view-tray">
