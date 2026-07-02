@@ -179,6 +179,20 @@ body {
 .pillar.active .pillar-inner {
   transform: scale(1.13);
 }
+.pillar-sub-hint {
+  position: absolute;
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.13);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: sub-hint-pulse 5s ease-in-out infinite;
+}
+@keyframes sub-hint-pulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.07); }
+}
 
 .p-icon {
   font-size: 32px;
@@ -2029,10 +2043,30 @@ function loadChildren() {
 }
 function saveChildren() {
   localStorage.setItem('sss_children', JSON.stringify(childData));
+  updatePillarHints();
+}
+function updatePillarHints() {
+  PILLARS.forEach(function(p) {
+    var el = document.getElementById('pillar-' + p.id);
+    if (!el) return;
+    var inner = el.querySelector('.pillar-inner');
+    if (!inner) return;
+    var old = inner.querySelector('.pillar-sub-hint');
+    if (old) old.remove();
+    var named = (childData[p.id] || []).filter(function(c) {
+      var r = resolveNode(c);
+      return r.title && !/^(theme|node)\s*\d*$/i.test(r.title.trim());
+    });
+    if (!named.length) return;
+    var hint = document.createElement('div');
+    hint.className = 'pillar-sub-hint';
+    inner.appendChild(hint);
+  });
 }
 loadChildren();
 loadResonances();
 renderPillarRings();
+updatePillarHints();
 
 var childDataHistory = [];
 var MAX_HISTORY = 50;
@@ -2913,6 +2947,7 @@ function setAct(idx) {
   drawLines();
   renderPillars();
   renderPillarRings();
+  updatePillarHints();
   var info = ACTS_INFO[idx];
   document.getElementById('act-field-act').textContent = info.act;
   document.getElementById('act-field-title').textContent = info.title;
