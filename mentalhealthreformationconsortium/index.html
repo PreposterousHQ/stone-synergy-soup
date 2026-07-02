@@ -2999,7 +2999,7 @@ function renderNovelView() {
       var safeName = p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
       var safeColor = p.color.replace(/'/g,'');
       html += '<div class="novel-panel" style="border-top-color:' + p.color + ';color:' + p.color + ';" onclick="novelDrillIn({id:\'' + safeId + '\',name:\'' + safeName + '\',color:\'' + safeColor + '\'}, true)">';
-      html += '<div class="novel-caption-bar" style="background:' + p.color + '">Episode ' + (i+1) + '</div>';
+      html += '<div class="novel-caption-bar" style="background:' + p.color + '">Episode</div>';
       html += '<div class="novel-panel-title">' + escHtml(p.name) + '</div>';
       if (p.bullets && p.bullets[0]) html += '<div class="novel-panel-body">' + escHtml(p.bullets[0]) + '</div>';
       html += '<div class="novel-panel-meta"><span>' + childCount + ' node' + (childCount !== 1 ? 's' : '') + '</span>';
