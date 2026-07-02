@@ -411,17 +411,25 @@ body {
 .wall-tile-source { font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:0.5px; }
 .wall-empty { display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;color:rgba(255,255,255,0.25);font-size:12px;text-align:center;line-height:1.7; }
 /* === ACT INFO CLAPBOARD === */
-#act-info-panel { position: fixed; top: 22px; right: 22px; z-index: 299; display: flex; flex-direction: row; align-items: flex-start; }
-#act-info-toggle { width: 26px; min-height: 52px; background: rgba(6,6,18,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-right: none; border-radius: 10px 0 0 10px; color: rgba(255,255,255,0.4); font-size: 10px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-family: inherit; transition: color 0.18s, border-color 0.18s; }
-#act-info-toggle:hover { color: rgba(255,255,255,0.8); }
-#act-info-panel.collapsed #act-info-toggle { border-right: 1px solid rgba(255,255,255,0.15); border-radius: 10px; }
-#act-info-inner { width: 210px; background: rgba(6,6,18,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-left: none; border-radius: 0 10px 10px 0; overflow: hidden; max-width: 210px; transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1); }
+#act-info-panel { position: fixed; top: 22px; right: 22px; z-index: 299; display: flex; flex-direction: row; align-items: flex-start; filter: drop-shadow(-2px 6px 28px rgba(0,0,0,0.85)); }
+#act-info-toggle { width: 18px; min-height: 68px; background: #161616; border: 1.5px solid rgba(255,255,255,0.22); border-right: none; border-radius: 5px 0 0 5px; color: rgba(255,255,255,0.32); font-size: 9px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-family: inherit; transition: color 0.18s; }
+#act-info-toggle:hover { color: rgba(255,255,255,0.85); }
+#act-info-panel.collapsed #act-info-toggle { border-right: 1.5px solid rgba(255,255,255,0.22); border-radius: 5px; }
+#act-info-inner { width: 238px; background: #111; border: 1.5px solid rgba(255,255,255,0.22); border-left: none; border-radius: 0 5px 5px 0; overflow: hidden; max-width: 238px; transition: max-width 0.38s cubic-bezier(0.4,0,0.2,1); font-family: 'Courier New', Courier, monospace; }
 #act-info-panel.collapsed #act-info-inner { max-width: 0; border: none; }
-#act-clapper-top { height: 30px; background: repeating-linear-gradient(-45deg, #0a0a16 0px, #0a0a16 9px, rgba(212,160,68,0.85) 9px, rgba(212,160,68,0.85) 18px); border-bottom: 2px solid rgba(255,255,255,0.12); }
-.act-field { padding: 7px 12px; }
-.act-field-label { font-size: 7px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 3px; font-family: 'Segoe UI',sans-serif; white-space: nowrap; }
-.act-field-val { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.82); line-height: 1.35; font-family: 'Segoe UI',sans-serif; white-space: normal; }
-.act-field-rule { height: 1px; background: rgba(255,255,255,0.09); margin: 0 12px; }
+/* Clapper arm — diagonal stripe bar with rivet */
+#act-clapper-arm { height: 42px; position: relative; background: repeating-linear-gradient(-52deg, #0e0e0e 0px, #0e0e0e 13px, #d4a030 13px, #d4a030 26px); box-shadow: 0 5px 18px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.6); }
+#act-clapper-arm::before { content: ''; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #555, #1a1a1a); border: 2px solid rgba(255,255,255,0.35); box-shadow: 0 0 0 3px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.8); }
+#act-clapper-arm::after { content: 'SLATE'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: 'Courier New', Courier, monospace; font-size: 7px; font-weight: 900; letter-spacing: 3.5px; color: rgba(0,0,0,0.55); }
+/* Production title — full-width top field */
+#act-clapper-prod { padding: 9px 12px 8px 12px; border-bottom: 1.5px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); }
+#act-clapper-prod .clapper-lbl { display: block; font-size: 6px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 4px; font-family: 'Courier New', Courier, monospace; }
+#act-field-prod { font-family: 'Courier New', Courier, monospace; font-size: 9.5px; font-weight: 700; color: #f0ece2; letter-spacing: 0.8px; line-height: 1.4; text-transform: uppercase; }
+/* Two-cell grid rows */
+.clapper-row { display: flex; flex-direction: row; border-bottom: 1px solid rgba(255,255,255,0.1); min-height: 42px; }
+.clapper-row:last-child { border-bottom: none; }
+.clapper-cell-lbl { width: 46px; flex-shrink: 0; padding: 6px 4px; border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-family: 'Courier New', Courier, monospace; font-size: 6.5px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.025); }
+.clapper-cell-val { flex: 1; padding: 8px 11px; font-family: 'Courier New', Courier, monospace; font-size: 11.5px; font-weight: 700; color: #f0ece2; line-height: 1.3; display: flex; align-items: center; letter-spacing: 0.3px; }
 /* === VIEW TRAY === */
 #view-tray { position: fixed; bottom: 20px; right: 20px; z-index: 450; display: flex; flex-direction: row; gap: 5px; align-items: center; background: rgba(6,6,18,0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 32px; padding: 5px 8px; }
 .view-btn { width: 36px; height: 36px; border-radius: 50%; background: none; border: 1.5px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.5); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; padding: 0; font-family: inherit; flex-shrink: 0; }
@@ -3122,22 +3130,20 @@ window.addEventListener('load', function() {
   </div>
 </div>
 <div id="act-info-panel">
-  <button id="act-info-toggle" onclick="toggleActInfo()" title="Toggle act info">&#8249;</button>
+  <button id="act-info-toggle" onclick="toggleActInfo()" title="Toggle clapboard">&#8249;</button>
   <div id="act-info-inner">
-    <div id="act-clapper-top"></div>
-    <div class="act-field">
-      <div class="act-field-label">Production</div>
-      <div class="act-field-val" id="act-field-prod">A Civil Rights Moviement for the Soul</div>
+    <div id="act-clapper-arm"></div>
+    <div id="act-clapper-prod">
+      <span class="clapper-lbl">Production</span>
+      <div id="act-field-prod">A Civil Rights Moviement for the Soul</div>
     </div>
-    <div class="act-field-rule"></div>
-    <div class="act-field">
-      <div class="act-field-label">Act</div>
-      <div class="act-field-val" id="act-field-act">ACT I: Unbreakable Spirit</div>
+    <div class="clapper-row">
+      <div class="clapper-cell-lbl">Act</div>
+      <div class="clapper-cell-val" id="act-field-act">ACT I: Unbreakable Spirit</div>
     </div>
-    <div class="act-field-rule"></div>
-    <div class="act-field">
-      <div class="act-field-label">Title</div>
-      <div class="act-field-val" id="act-field-title">I Have a Team</div>
+    <div class="clapper-row">
+      <div class="clapper-cell-lbl">Title</div>
+      <div class="clapper-cell-val" id="act-field-title">I Have a Team</div>
     </div>
   </div>
 </div>
