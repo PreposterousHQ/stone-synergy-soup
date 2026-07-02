@@ -1002,10 +1002,21 @@ body {
   overflow: hidden; color: #fff;
 }
 .c-node:hover { transform: translate(-50%,-50%) scale(1.08); }
+.c-node-sub-hint {
+  position: absolute; bottom: 7px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 4px; align-items: center;
+  pointer-events: none; z-index: 3;
+}
 #center.drill-mode .center-bg {
   display: flex !important; flex-direction: column !important;
   align-items: center !important; justify-content: center !important; gap: 8px !important;
   background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.75) 100%) !important;
+}
+#center.drill-mode-photo .center-bg {
+  background: none !important;
+  display: block !important;
+  overflow: hidden !important;
 }
 .drill-center-icon { display: flex; align-items: center; justify-content: center; }
 .drill-center-icon svg { width: 44px; height: 44px; }
@@ -1622,12 +1633,22 @@ function openPanel(p) {
   })(p.id, p.name);
   pEl.appendChild(rWrapP);
   pEl.classList.add('open');
+  setCoStar(p.name);
+}
+
+function setCoStar(name) {
+  var row = document.getElementById('act-costar-row');
+  var val = document.getElementById('act-field-costar');
+  if (!row || !val) return;
+  if (name) { val.textContent = name; row.style.display = 'flex'; }
+  else { row.style.display = 'none'; val.textContent = ''; }
 }
 
 function closePanel() {
   document.getElementById('panel').classList.remove('open');
   document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
   currentId = null;
+  if (!currentDrill()) setCoStar(null);
 }
 
 function openProfileModal(p) {
@@ -2135,16 +2156,22 @@ function enterDrillFrame(frame) {
   clearSVGLines();
   var center = document.getElementById('center');
   center.classList.add('drill-mode');
+  var cb = center.querySelector('.center-bg');
   if (frame.photo) {
-    center.querySelector('.center-bg').innerHTML =
-      '<img src="'+frame.photo+'" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid '+frame.color+';box-shadow:0 0 28px '+frame.glowColor+',0 0 64px '+frame.glowColor+';display:block;flex-shrink:0;" />'+
-      '<div class="drill-center-name" style="color:'+frame.color+'">'+escHtml(frame.name)+'</div>';
+    center.classList.add('drill-mode-photo');
+    cb.innerHTML =
+      '<img src="'+frame.photo+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;" />'+
+      '<div style="position:absolute;bottom:0;left:0;right:0;height:52%;background:linear-gradient(transparent,rgba(0,0,0,0.78));border-radius:0 0 50% 50%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;">'+
+      '<div class="drill-center-name" style="color:'+frame.color+';background:none;margin:0;">'+escHtml(frame.name)+'</div>'+
+      '</div>';
   } else if (frame.icon) {
-    center.querySelector('.center-bg').innerHTML =
+    center.classList.remove('drill-mode-photo');
+    cb.innerHTML =
       '<div class="drill-center-icon" style="filter:drop-shadow(0 0 16px '+frame.glowColor+')">'+frame.icon+'</div>'+
       '<div class="drill-center-name" style="color:'+frame.color+'">'+frame.name+'</div>';
   } else {
-    center.querySelector('.center-bg').innerHTML =
+    center.classList.remove('drill-mode-photo');
+    cb.innerHTML =
       '<div class="drill-center-name" style="color:'+frame.color+';font-size:15px;padding:0 12px;text-align:center;line-height:1.3">'+escHtml(frame.name)+'</div>';
   }
   document.getElementById('calling-sheet').classList.add('drill-back');
@@ -2163,6 +2190,7 @@ function enterDrillFrame(frame) {
 
 function drillInto(p) {
   drillStack = [{ id: p.id, name: p.name, color: p.color, glowColor: p.glowColor, icon: p.icon, photo: p.photo || null }];
+  setCoStar(p.name);
   document.querySelectorAll('.pillar').forEach(function(n) {
     n.style.opacity = '0'; n.style.pointerEvents = 'none';
   });
@@ -2189,9 +2217,11 @@ function drillOut() {
     drawLines();
     var center = document.getElementById('center');
     center.classList.remove('drill-mode');
+    center.classList.remove('drill-mode-photo');
     center.querySelector('.center-bg').innerHTML =
       '<div class="steam-wrap"><div class="steam-wisp"></div><div class="steam-wisp"></div><div class="steam-wisp"></div></div>'+
       '<div class="center-hint-bar">Click to add ingredient</div>';
+    setCoStar(null);
     renderMapDots();
     document.getElementById('back-btn').style.display = 'none';
     document.getElementById('calling-sheet').classList.remove('drill-back');
@@ -2347,6 +2377,23 @@ function renderChildMap(frame) {
     node.style.borderColor = isNamed ? '#D4A044' : lightenHex(frame.color, 0.3);
     if (isNamed) node.style.borderWidth = '2.5px';
     node.innerHTML = '<div style=”color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:1.3;width:88px;text-transform:uppercase;letter-spacing:0.5px;word-break:break-word;overflow-wrap:break-word;text-shadow:0 1px 6px rgba(0,0,0,0.9);flex-shrink:0;”>'+(child.refId?'🔗 ':'')+escHtml(resolved.title)+'</div>';
+    var subNamed = (childData[resolved.id] || []).filter(function(sc) {
+      var sr = resolveNode(sc);
+      return sr.title && !/^(theme|node)\s*\d*$/i.test(sr.title.trim());
+    });
+    if (subNamed.length) {
+      var subHint = document.createElement('div');
+      subHint.className = 'c-node-sub-hint';
+      var sdCount = Math.min(subNamed.length, 5);
+      for (var sd = 0; sd < sdCount; sd++) {
+        var sdot = document.createElement('div');
+        sdot.className = 'pillar-sub-dot';
+        sdot.style.background = lightenHex(frame.color, 0.35);
+        sdot.style.animationDelay = (sd * 0.4) + 's';
+        subHint.appendChild(sdot);
+      }
+      node.appendChild(subHint);
+    }
     (function(c) {
       node.addEventListener('click', function(e) { e.stopPropagation(); showChildPanel(frame, c); });
       node.addEventListener('dblclick', function(e) { e.stopPropagation(); drillIntoChild(c); });
@@ -2385,6 +2432,7 @@ function showChildPanel(frame, child) {
   _panelFrame = frame; _panelChild = child;
   var resolved = resolveNode(child);
   document.querySelectorAll('.pillar').forEach(function(el) { el.classList.remove('active'); });
+  setCoStar(frame.name);
   document.getElementById('panel-icon').innerHTML = frame.icon || '';
   document.getElementById('panel-title').textContent = resolved.title;
   document.getElementById('panel-bar').style.background = frame.color;
@@ -3199,6 +3247,10 @@ window.addEventListener('load', function() {
     <div class="clapper-row">
       <div class="clapper-cell-lbl">Title</div>
       <div class="clapper-cell-val" id="act-field-title">I Have a Team</div>
+    </div>
+    <div class="clapper-row" id="act-costar-row" style="display:none;">
+      <div class="clapper-cell-lbl" style="font-size:5.5px;letter-spacing:1.5px;line-height:1.3;">Co&#8209;<br>star</div>
+      <div class="clapper-cell-val" id="act-field-costar" style="font-size:10px;line-height:1.3;font-style:italic;color:rgba(240,236,226,0.85);"></div>
     </div>
   </div>
 </div>
